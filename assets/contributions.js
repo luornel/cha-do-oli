@@ -23,12 +23,19 @@
   function paintSelection(){
     current=selection();
     if (!current) return;
-    info.textContent=`${current.giftName} · ${current.units} ${current.units===1?'cota':'cotas'} · ${moneyCents(current.amountCents)}`;
+    const product=JSON.parse(document.getElementById('app-data').textContent).gifts.find(g=>g.id===current.giftId);
+    const label=product&&!product.unlimited&&Number(product.price)<500?'Valor integral':`${current.units} ${current.units===1?'cota':'cotas'}`;
+    info.textContent=`${current.giftName} · ${label} · ${moneyCents(current.amountCents)}`;
   }
   function progressRows(){
+    // Os presentes abaixo de R$ 500 podem ser presenteados repetidas vezes,
+    // sem barra de cotas e sem esgotamento no convite.
+    const catalog=new Map(JSON.parse(document.getElementById('app-data').textContent).gifts.map(g=>[Number(g.id),g]));
     document.querySelectorAll('#gift-grid .gift').forEach(card=>{
       const trigger=card.querySelector('[data-gift]');if(!trigger)return;
-      const row=state.progress.get(Number(trigger.dataset.gift));if(!row)return;
+      const giftId=Number(trigger.dataset.gift),item=catalog.get(giftId);
+      if(!item||item.unlimited||Number(item.price)<500){card.querySelector('.gift-progress')?.remove();trigger.removeAttribute('aria-disabled');trigger.classList.remove('gift-closed');return;}
+      const row=state.progress.get(giftId);if(!row)return;
       const confirmed=Number(row.confirmed_quotas)||0;
       const free=Number(trigger.dataset.gift)===23;
       const total=Number(row.total_quotas)||0;
@@ -38,7 +45,7 @@
       el.replaceChildren();
       const label=document.createElement('span');label.textContent=free?`${confirmed} cotas livres confirmadas`:`${confirmed} de ${total} cotas confirmadas`;
       if(free){
-        const remain=document.createElement('small');remain.textContent='Sempre disponível · R$ 50 por cota';
+        const remain=document.createElement('small');remain.textContent='';
         el.append(label,remain);
       }else{
         const track=document.createElement('div');track.className='gift-progress-track';track.setAttribute('role','progressbar');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(total));track.setAttribute('aria-valuenow',String(confirmed));
@@ -60,7 +67,7 @@
   }
   function isOverLimit(){
     if(!current)return false;
-    if(current.giftId===23)return false;
+    if(current.giftId===23||Number(JSON.parse(document.getElementById('app-data').textContent).gifts.find(g=>g.id===current.giftId)?.price)<500)return false;
     const row=state.progress.get(current.giftId);if(!row)return false;
     return current.units>Math.max(0,Number(row.total_quotas)-Number(row.confirmed_quotas));
   }

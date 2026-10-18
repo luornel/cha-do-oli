@@ -336,3 +336,11 @@ html{scroll-padding-top:20px}
 .footer-admin-link{display:inline-block;color:#89735d;font-size:12px;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#b9a18a}
 .footer-admin-link:hover,.footer-admin-link:focus-visible{color:#5d4734;text-decoration-color:currentColor}
 .footer-admin-link:focus-visible{outline:2px solid #5d4734;outline-offset:4px;border-radius:2px}
+/* Confirmação de contribuição em destaque */
+.contribution-flow{border:1px solid #d0e4ca;border-radius:15px;background:linear-gradient(180deg,#fafff7,#f0f7eb);padding:18px 16px;box-shadow:0 6px 18px rgba(69,115,65,.06)}
+.contribution-divider{background:#dce8d7}
+.contribution-badge{display:grid;place-items:center;width:55px;height:55px;margin:0 auto 9px;border-radius:50%;background:#e4f3dc;font-size:31px}
+.contribution-title{text-align:center;font-size:clamp(24px,5vw,29px);color:#3c6841;font-weight:600;line-height:1.2}
+.contribution-explain{text-align:center;margin:7px auto 14px;max-width:380px;font-size:13px}
+.contribution-register--green{background:#498650;color:white;border:1px solid #407e47;box-shadow:0 4px 12px #39703b20;font-size:14px;padding:14px}
+.contribution-register--green:hover{background:#386f40}

@@ -52,11 +52,11 @@
   renderGifts();
  }
  function renderGifts(){
-  const items=(data.gifts||[]).slice().sort((a,b)=>Number(!!a.unlimited)-Number(!!b.unlimited)||a.price-b.price);
+  const items=(data.gifts||[]).slice().sort((a,b)=>(a.id===23?-1:b.id===23?1:a.price-b.price));
   $('#gift-grid').innerHTML=items.length?items.map(g=>{
-   const n=giftQuotas(g),one=quotaCents(g)/100,free=unlimitedGift(g),band=free?'free':Number(g.price)<=100?'low':Number(g.price)<=500?'medium':'high';
-   const quotaText=free?'Cotas ilimitadas de <strong>R$ 50,00</strong>':Number(g.price)<=100||n===1?'Valor integral':`${n} cotas de <strong>${money(one)}</strong> (opcional)`;
-   return `<article class="gift${free?' gift-unlimited':''}" data-band="${band}"><div class="gift-symbol" aria-hidden="true">${safe(g.emoji||'🎁')}</div><h3>${safe(g.name)}</h3><p class="gift-desc">${safe(g.description)}</p><div class="gift-price-label">${free?'Valor por cota':'Valor total'}</div><div class="gift-price">${money(g.price)}</div><div class="gift-quota">${quotaText}</div><a class="gift-btn" href="#presentear-${Number(g.id)}" data-gift="${Number(g.id)}" aria-label="Escolher ${safe(g.name)}">${free?'Escolher minha contribuição →':Number(g.price)<=100?'Presentear →':'Ver formas de presentear →'}</a></article>`;
+   const n=giftQuotas(g),one=quotaCents(g)/100,free=unlimitedGift(g),split=!free&&Number(g.price)>=500&&n>1,band=free?'free':Number(g.price)<=100?'low':Number(g.price)<=500?'medium':'high';
+   const quotaText=free?`Cotas livres de <strong>${money(g.price)}</strong>`:split?`${n} cotas de <strong>${money(one)}</strong> (opcional)`:'Valor integral';
+   return `<article class="gift${free?' gift-unlimited':''}" data-band="${band}"><div class="gift-symbol" aria-hidden="true">${safe(g.emoji||'🎁')}</div><h3>${safe(g.name)}</h3><p class="gift-desc">${safe(g.description)}</p><div class="gift-price-label">${free?'Valor por cota':'Valor total'}</div><div class="gift-price">${money(g.price)}</div><div class="gift-quota">${quotaText}</div><a class="gift-btn" href="#presentear-${Number(g.id)}" data-gift="${Number(g.id)}" aria-label="Escolher ${safe(g.name)}">${free?'Escolher minha contribuição →':split?'Ver formas de presentear →':'Presentear →'}</a></article>`;
   }).join(''):'<p class="fineprint" style="grid-column:1/-1">Nenhum presente disponível.</p>';
  }
 
@@ -80,21 +80,21 @@
   for(let y=0;y<s;y++)for(let x=0;x<s;x++)if(qr.isDark(y,x))path+=`M${x+4} ${y+4}h1v1h-1z`;
   $('#qr-code').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" role="img" aria-label="QR Code do Pix de ${safe(money(pixAmount()))}" shape-rendering="crispEdges"><rect width="${n}" height="${n}" fill="#ffffff"/><path fill="#14231d" d="${path}"/></svg>`;
  }
- function pixAmount(){return unlimitedGift(gift)?quantity*50:(mode==='full'?cents(gift.price):Math.min(quantity,giftQuotas(gift))*quotaCents(gift))/100;}
+ function pixAmount(){return unlimitedGift(gift)?quantity*Number(gift.price):(mode==='full'?cents(gift.price):Math.min(quantity,giftQuotas(gift))*quotaCents(gift))/100;}
  function syncPay(){
   if(!gift)return;
   const free=unlimitedGift(gift),count=free?MAX_FREE_PER_REQUEST:giftQuotas(gift);
   quantity=Math.max(1,Math.min(count,Math.floor(Number(quantity)||1)));
   $('#quantity').value=String(quantity);$('#quantity').max=String(count);
   $('#minus-qty').disabled=quantity<=1;$('#plus-qty').disabled=quantity>=count;
-  const canSplit=!free&&Number(gift.price)>100&&count>1;
+  const canSplit=!free&&Number(gift.price)>=500&&count>1;
   mode=free?'quotas':(!canSplit?'full':mode);
   $('#gift-overlay .mode-switch').hidden=!canSplit;
   const isFull=!free&&mode==='full';
   $('#quantity-panel').hidden=isFull;
   $$('.mode-btn').forEach(b=>{const active=b.dataset.mode===(isFull?'full':'quotas');b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
-  $('#detail-selection').textContent=free?`${quantity} ${quantity===1?'cota livre':'cotas livres'} de R$ 50`:isFull?'Valor integral':`${quantity} ${quantity===1?'cota':'cotas'} de ${count}`;
-  const amount=free?quantity*50:(isFull?cents(gift.price):quantity*quotaCents(gift))/100;
+  $('#detail-selection').textContent=free?`${quantity} ${quantity===1?'cota livre':'cotas livres'} de ${money(gift.price)}`:isFull?'Valor integral':`${quantity} ${quantity===1?'cota':'cotas'} de ${count}`;
+  const amount=free?quantity*Number(gift.price):(isFull?cents(gift.price):quantity*quotaCents(gift))/100;
   $('#detail-price').textContent=money(amount);
   window.dispatchEvent(new CustomEvent('oli:selection-changed'));
   $('#copy-fallback').hidden=true;
@@ -105,8 +105,8 @@
   gift=data.gifts.find(g=>Number(g.id)===Number(id));if(!gift)return;
   previousFocus=document.activeElement;quantity=1;mode=unlimitedGift(gift)?'quotas':'full';
   $('#detail-symbol').textContent=gift.emoji||'🎁';$('#dialog-title').textContent=gift.name;
-  $('#detail-base').textContent=unlimitedGift(gift)?'Sua contribuição é livre: cada cota vale R$ 50,00 e está sempre disponível.':`Valor total do presente: ${money(gift.price)}`;
-  $('#quota-unit').textContent=unlimitedGift(gift)?'R$ 50,00 por cota · sem limite total':`${money(quotaCents(gift)/100)} cada · ${giftQuotas(gift)} no total`;
+  $('#detail-base').textContent=unlimitedGift(gift)?`Sua contribuição é livre: cada cota vale ${money(gift.price)}.`:`Valor total do presente: ${money(gift.price)}`;
+  $('#quota-unit').textContent=unlimitedGift(gift)?`${money(gift.price)} por cota`:`${money(quotaCents(gift)/100)} cada · ${giftQuotas(gift)} no total`;
   $('#copy-fallback').hidden=true;
   $('#detail-pix').textContent=data.pixKey||'Não configurada';
   syncPay();setOverlay('gift-overlay',true);window.dispatchEvent(new CustomEvent('oli:gift-opened'));$('[data-close="gift"]').focus();
@@ -190,6 +190,6 @@
   const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='cha-do-oli-convite.html';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   toast('Arquivo dos convidados gerado! Confira e envie como documento.');
  });
- window.OliInvite={getSelection:()=>gift ? {giftId:Number(gift.id),giftName:gift.name,units:unlimitedGift(gift)?quantity:(mode==='full'||Number(gift.price)<=100?giftQuotas(gift):quantity),amountCents:Math.round(pixAmount()*100)} : null};
+ window.OliInvite={getSelection:()=>gift ? {giftId:Number(gift.id),giftName:gift.name,units:unlimitedGift(gift)?quantity:(mode==='full'||Number(gift.price)<500?giftQuotas(gift):quantity),amountCents:Math.round(pixAmount()*100)} : null};
  render();
 })();
