@@ -6,3 +6,20 @@
 .primary{background:#89765c;color:white;border:0;padding:12px 18px;border-radius:9px;font-weight:700}.primary:hover{background:#69563e}.login-panel .primary{width:100%;margin-top:20px}.outline,.filters button{background:#fffaf2;border:1px solid #c8ac8b;color:#644e3b;padding:9px 16px;border-radius:9px;font-weight:650;font-size:13px}.outline:hover,.filters button:hover{background:#f1e4d3}.filters button.active{background:#74674f;color:#fff;border-color:#74674f}.message{min-height:22px;color:#80503d;font-size:13px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:15px 0 24px}.metric{background:#fffaf2;border:1px solid var(--border);border-radius:12px;padding:17px 15px;display:flex;flex-direction:column;gap:6px}.metric span{color:var(--muted);font-size:12px}.metric strong{font-size:22px;white-space:nowrap;letter-spacing:-.03em}.warning{background:#f7efdf}.warning strong{font-size:13px;color:#7a5736}.warning p{margin:5px 0 0}.dashboard-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:23px 0 15px}.dashboard-title h2{margin:0}.dash-actions,.filters{display:flex;flex-wrap:wrap;gap:8px}.filters{margin:16px 0}.counts{color:#8b795f;font-size:13px}.entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.entry{border:1px solid var(--border);border-radius:14px;background:#fffaf3;padding:20px;min-width:0;box-shadow:0 3px 15px #5b453308}.entry-head{display:flex;align-items:start;justify-content:space-between;gap:8px}.entry h3{font:500 22px Georgia,serif;margin:0 0 2px;overflow-wrap:anywhere}.entry .gift-name{color:var(--sepia);font-size:13px;margin:6px 0}.entry-data{margin:14px 0;padding:12px;background:#f5ebdb;border-radius:10px}.entry-data strong{font-size:19px}.entry-meta{font-size:12px;color:#766654;line-height:1.7;overflow-wrap:anywhere}.entry-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.tag{font-size:11px;font-weight:750;padding:4px 8px;border-radius:99px;background:#f4e5cc;color:#85603d;white-space:nowrap}.tag.confirmed{background:#e5efdf;color:#496f3b}.tag.rejected{background:#f4e4de;color:#884d43}.empty{grid-column:1/-1;text-align:center;padding:45px 18px;color:#7c6a54;background:#fffaf2;border:1px dashed var(--border);border-radius:12px}footer{text-align:center;font-size:12px;color:#9a8167;padding:0 20px 38px}
 @media(max-width:850px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.entries{grid-template-columns:1fr}}
 @media(max-width:420px){.admin-head{padding:18px 15px}.admin-mark{font-size:12px}.dashboard-title{align-items:flex-start;flex-direction:column}.filters button{flex:1}.metrics{gap:9px}.metric{padding:11px}.metric strong{font-size:18px}}
+
+/* Gestão manual de cotas */
+.manager-heading h2{font:500 28px Georgia,serif;color:#624d3c;margin:0}
+.manager-heading p{margin:4px 0 18px}
+.manager-grid{display:grid;grid-template-columns:2fr 1.2fr 1fr;gap:12px}
+.manager-grid label,.manager-note-label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:650;color:#6b5946}
+.manager-grid input,.manager-grid select,.manager-note-label input{min-width:0;width:100%;font:inherit;font-size:15px;background:white;border:1px solid #d8c5aa;border-radius:9px;padding:12px;color:#51402f}
+.manager-balance{font-weight:650;color:#715a41!important;margin:17px 0}
+.manager-note-label{margin-bottom:15px}
+.manager-panel .primary{min-width:180px}
+.manager-panel .primary.danger{background:#985b4b}
+.adjustment-history{border-top:1px solid #e2d1bb;margin-top:20px;padding-top:14px;font-size:13px;color:#68523e}
+.adjustment-history summary{cursor:pointer;font-weight:700}
+.history-list{margin-top:10px;max-height:280px;overflow-y:auto}
+.history-list p{margin:0;padding:10px 0;border-bottom:1px solid #f0e5d7}
+@media(max-width:650px){.manager-grid{grid-template-columns:1fr}.manager-panel .primary{width:100%}}
+[hidden]{display:none!important}

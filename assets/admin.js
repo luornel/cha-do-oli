@@ -4,14 +4,14 @@
   const $=id=>document.getElementById(id);
   const api=window.OliBackend;
   const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(n)||0)/100);
-  let entries=[], filter='pending', busy=false;
+  let entries=[], balances=[],history=[], filter='pending', busy=false;
   function show(id,value=true){$(id).hidden=!value;}
   function message(id,text){$(id).textContent=text||'';}
   function render(){
     const paid=entries.filter(e=>e.status==='confirmed');
     const pending=entries.filter(e=>e.status==='pending');
-    $('paid-units').textContent=String(paid.reduce((a,e)=>a+Number(e.units),0));
-    $('paid-amount').textContent=money(paid.reduce((a,e)=>a+Number(e.amount_cents),0));
+    $('paid-units').textContent=String(balances.reduce((a,g)=>a+Number(g.confirmed_quotas),0));
+    $('paid-amount').textContent=money(balances.reduce((a,g)=>a+Number(g.confirmed_quotas)*Number(g.unit_price_cents),0));
     $('pending-count').textContent=String(pending.length);
     $('pending-amount').textContent=money(pending.reduce((a,e)=>a+Number(e.amount_cents),0));
     $('total-count').textContent=`${entries.length} registros`;
@@ -44,9 +44,71 @@
     }
   }
   async function load(){
-    try{message('dashboard-message','Atualizando contribuições…');entries=(await api.rpc('oli_admin_list'))||[];render();message('dashboard-message','');}
-    catch(e){message('dashboard-message','Falha ao carregar: '+e.message);throw e;}
+    try{
+      message('dashboard-message','Atualizando contribuições…');
+      [entries,balances,history]=await Promise.all([
+        api.rpc('oli_admin_list'),api.rpc('oli_admin_gift_balances'),api.rpc('oli_admin_adjustment_history')
+      ]);
+      entries=entries||[];balances=balances||[];history=history||[];
+      render();renderManager();message('dashboard-message','');
+    }catch(e){message('dashboard-message','Falha ao carregar: '+e.message);throw e;}
   }
+
+  function renderManager(){
+    const picker=$('manage-gift'),old=picker.value;
+    picker.replaceChildren();
+    for(const g of balances){
+      const option=document.createElement('option');option.value=String(g.gift_id);
+      option.textContent=g.gift_name;picker.append(option);
+    }
+    if(balances.some(g=>String(g.gift_id)===old))picker.value=old;
+    paintManager();
+    const historyList=$('adjustment-history-list');historyList.replaceChildren();
+    if(!history.length){const p=document.createElement('p');p.textContent='Nenhum ajuste manual realizado.';historyList.append(p);}
+    for(const e of history){
+      const p=document.createElement('p');
+      const count=Math.abs(Number(e.delta_units));
+      const verb=({add:'Adicionadas',remove:'Removidas',reset:'Zeradas'})[e.action]||'Ajustadas';
+      p.textContent=`${new Date(e.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})} · ${e.gift_name} · ${verb}: ${count} ${count===1?'cota':'cotas'}${e.note?' · '+e.note:''}`;
+      historyList.append(p);
+    }
+  }
+  function paintManager(){
+    const g=balances.find(v=>String(v.gift_id)===$('manage-gift').value);
+    const mode=$('manage-action').value;
+    const box=$('manage-units-box'),input=$('manage-units');
+    box.hidden=mode==='reset';input.required=mode!=='reset';
+    if(!g){$('manage-balance').textContent='Selecione um presente.';return;}
+    const paid=Number(g.confirmed_quotas),unit=money(g.unit_price_cents);
+    const total=g.is_unlimited?'disponibilidade ilimitada':`de ${g.total_quotas} cotas totais`;
+    $('manage-balance').textContent=`${paid} ${paid===1?'cota contabilizada':'cotas contabilizadas'} · ${unit} por cota · ${total}.`;
+    const submit=$('manage-submit');submit.textContent=mode==='reset'?'Zerar cotas deste presente':mode==='remove'?'Remover cotas':'Adicionar cotas';
+    submit.classList.toggle('danger',mode==='reset');
+  }
+  $('manage-gift').addEventListener('change',paintManager);
+  $('manage-action').addEventListener('change',paintManager);
+  $('quota-adjust-form').addEventListener('submit',async ev=>{
+    ev.preventDefault();if(busy)return;
+    const form=ev.currentTarget,selected=balances.find(g=>String(g.gift_id)===form.elements.gift_id.value);
+    if(!selected||!form.reportValidity())return;
+    const action=form.elements.action.value;
+    const count=action==='reset'?null:Number(form.elements.units.value);
+    const before=Number(selected.confirmed_quotas);
+    const after=action==='reset'?0:action==='add'?before+count:before-count;
+    if(!Number.isInteger(after)||after<0||(!selected.is_unlimited&&after>Number(selected.total_quotas))){
+      message('manage-message','Quantidade inválida ou superior ao disponível neste presente.');return;
+    }
+    const verb=action==='reset'?'ZERAR todas as cotas contabilizadas':action==='remove'?'REMOVER cotas contabilizadas':'ADICIONAR cotas contabilizadas';
+    if(!window.confirm(`${verb} de ${selected.gift_name}?\n\nAntes: ${before} cotas\nDepois: ${after} cotas\n\nO histórico de pagamentos será preservado.`))return;
+    busy=true;$('manage-submit').disabled=true;message('manage-message','Salvando ajuste…');
+    try{
+      await api.rpc('oli_admin_adjust_quotas',{
+        p_gift_id:Number(selected.gift_id),p_action:action,p_units:count,p_note:form.elements.note.value.trim()||null
+      });
+      form.elements.note.value='';await load();message('manage-message','Ajuste realizado e registrado no histórico.');
+    }catch(err){message('manage-message',err.message||'Não foi possível ajustar as cotas.');}
+    finally{busy=false;$('manage-submit').disabled=false;}
+  });
   async function review(e,status){
     if(busy)return;
     const label=status==='confirmed'?'CONFIRMAR como pago':'REJEITAR';

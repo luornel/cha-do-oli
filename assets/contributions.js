@@ -32,17 +32,25 @@
       const trigger=card.querySelector('[data-gift]');if(!trigger)return;
       const row=state.progress.get(Number(trigger.dataset.gift));if(!row)return;
       const confirmed=Number(row.confirmed_quotas)||0;
+      const free=Number(trigger.dataset.gift)===23;
       const total=Number(row.total_quotas)||0;
       const remaining=Math.max(0,total-confirmed);
       let el=card.querySelector('.gift-progress');
       if(!el){el=document.createElement('div');el.className='gift-progress';card.insertBefore(el,trigger);}
       el.replaceChildren();
-      const label=document.createElement('span');label.textContent=`${confirmed} de ${total} cotas confirmadas`;
-      const track=document.createElement('div');track.className='gift-progress-track';track.setAttribute('role','progressbar');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(total));track.setAttribute('aria-valuenow',String(confirmed));
-      const fill=document.createElement('span');fill.style.width=`${total?Math.min(100,Math.round(100*confirmed/total)):0}%`;track.append(fill);
-      const remain=document.createElement('small');remain.textContent=remaining===0?'Presente completo':`${remaining} cotas ainda não confirmadas`;
-      el.append(label,track,remain);
-      if(!remaining){trigger.textContent='Presente completo';trigger.setAttribute('aria-disabled','true');trigger.classList.add('gift-closed');}
+      const label=document.createElement('span');label.textContent=free?`${confirmed} cotas livres confirmadas`:`${confirmed} de ${total} cotas confirmadas`;
+      if(free){
+        const remain=document.createElement('small');remain.textContent='Sempre disponível · R$ 50 por cota';
+        el.append(label,remain);
+      }else{
+        const track=document.createElement('div');track.className='gift-progress-track';track.setAttribute('role','progressbar');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(total));track.setAttribute('aria-valuenow',String(confirmed));
+        const fill=document.createElement('span');fill.style.width=`${total?Math.min(100,Math.round(100*confirmed/total)):0}%`;track.append(fill);
+        const remain=document.createElement('small');remain.textContent=remaining===0?'Presente completo':`${remaining} cotas ainda não confirmadas`;
+        el.append(label,track,remain);
+        const soldOut=remaining===0;
+        trigger.textContent=soldOut?'Presente completo':Number(trigger.dataset.gift)<=7?'Presentear →':'Ver formas de presentear →';
+        trigger.setAttribute('aria-disabled',String(soldOut));trigger.classList.toggle('gift-closed',soldOut);
+      }
     });
   }
   async function refresh(){
@@ -55,6 +63,7 @@
   }
   function isOverLimit(){
     if(!current)return false;
+    if(current.giftId===23)return false;
     const row=state.progress.get(current.giftId);if(!row)return false;
     return current.units>Math.max(0,Number(row.total_quotas)-Number(row.confirmed_quotas));
   }

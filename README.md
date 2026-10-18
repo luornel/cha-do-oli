@@ -61,3 +61,11 @@ Cha_do_Oli_14_novembro.ics          Calendário
 O GitHub Pages usa `main` e `/(root)`. Arquivos estáticos, sem servidor Node ou credenciais privadas.
 
 QR Code incluído localmente: **QRCode for JavaScript**, Kazuhiko Arase (MIT). Desenvolvimento e prototipação com apoio do ChatGPT.
+
+## Contribuição livre e ajustes administrativos
+
+- **Contribuição livre** (id 23): cotas de R$ 50,00, **sempre disponíveis**, sem teto acumulado de cotas. O formulário permite até 10.000 por solicitação para evitar problemas de tamanho de valores; podem ser feitas solicitações adicionais.
+- **Ajustar cotas** no painel: adicionar, remover ou zerar as cotas contabilizadas de um presente. Cada ajuste exige conta autorizada, tem confirmação antes de salvar e é registrado com data, usuário e observação opcional.
+- **Auditoria:** ajustes **não apagam nem modificam** contribuições anteriores. Contagem e total arrecadado usam pagamentos confirmados + ajustes manuais. Assim, reduzir ou zerar cotas muda a contagem atual sem apagar o registro do Pix original.
+- Migration incremental: `supabase/migrations/20261018_contribuicao_livre_ajustes.sql`. Aplicar depois da migration de cotas manuais.
+- Somente administradores autenticados e autorizados podem aplicar ajustes. Dados pessoais não são retornados pelo endpoint público.

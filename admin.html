@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#f6efe1">
   <title>Administração de cotas • Chá do Oli</title>
-  <link rel="stylesheet" href="assets/admin.css">
+  <link rel="stylesheet" href="assets/admin.css?v=manage-20261018">
 </head>
 <body>
   <header class="admin-head">
@@ -17,7 +17,6 @@
     <section class="intro">
       <p class="chapter">BASTIDORES DA HISTÓRIA</p>
       <h1>Controle de presentes</h1>
-      <p>Confira os Pix no Nubank e marque as contribuições como recebidas. Nenhum pagamento é confirmado automaticamente.</p>
     </section>
     <section id="admin-unconfigured" class="panel" hidden>
       <h2>Configuração pendente</h2>
@@ -26,7 +25,7 @@
     </section>
     <section class="panel login-panel" id="login-panel" hidden>
       <h2>Entrar como administrador</h2>
-      <p>Use a conta criada no Supabase Authentication e autorizada na tabela <code>oli_admins</code>.</p>
+      <p>Entre com suas credenciais de administração.</p>
       <form id="login-form">
         <label>E-mail <input name="email" type="email" required autocomplete="username" placeholder="Seu e-mail"></label>
         <label>Senha <input name="password" type="password" required autocomplete="current-password" placeholder="Senha da conta"></label>
@@ -43,6 +42,33 @@
         <div class="metric"><span>Valor pendente</span><strong id="pending-amount">R$ 0</strong></div>
       </div>
       <section class="panel warning"><strong>Confirmação manual</strong><p>Antes de confirmar, confira o valor e o nome de quem pagou no aplicativo Nubank. Uma solicitação enviada pelo convidado <em>não comprova</em> a realização do Pix. Pedidos pendentes não reservam cotas.</p></section>
+      <section class="panel manager-panel" aria-labelledby="quotas-heading">
+        <div class="manager-heading"><h2 id="quotas-heading">Ajustar cotas</h2><p>Adicione, remova ou zere as cotas contabilizadas de cada presente. O histórico dos Pix permanece preservado.</p></div>
+        <form id="quota-adjust-form">
+          <div class="manager-grid">
+            <label>Presente
+              <select id="manage-gift" name="gift_id" required><option value="">Carregando presentes…</option></select>
+            </label>
+            <label>Ação
+              <select name="action" id="manage-action">
+                <option value="add">Adicionar cotas</option>
+                <option value="remove">Remover cotas</option>
+                <option value="reset">Zerar cotas</option>
+              </select>
+            </label>
+            <label id="manage-units-box">Quantidade de cotas
+              <input type="number" id="manage-units" name="units" min="1" max="10000" step="1" value="1" required inputmode="numeric" />
+            </label>
+          </div>
+          <p class="manager-balance" id="manage-balance" aria-live="polite"></p>
+          <label class="manager-note-label">Observação (opcional)
+            <input type="text" name="note" maxlength="200" placeholder="Ex.: presente recebido fora do site" />
+          </label>
+          <button class="primary" type="submit" id="manage-submit">Salvar ajuste</button>
+          <p class="message" id="manage-message" role="status"></p>
+        </form>
+        <details class="adjustment-history"><summary>Ver histórico dos ajustes manuais</summary><div id="adjustment-history-list" class="history-list"></div></details>
+      </section>
       <div class="dashboard-title"><h2>Contribuições</h2><span class="counts" id="total-count">0 registros</span></div>
       <div class="filters" role="group" aria-label="Filtrar solicitações">
         <button type="button" data-filter="pending" class="active" aria-pressed="true">Pendentes</button>
@@ -58,6 +84,6 @@
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js"></script>
+  <script defer src="assets/admin.js?v=manage-20261018"></script>
 </body>
 </html>
