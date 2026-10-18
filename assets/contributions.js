@@ -9,6 +9,8 @@
   const flow=$('contribution-flow');
   if (!flow) return;
   flow.hidden=false;
+  const oldNote=document.querySelector('#presentes .fineprint');
+  if(oldNote)oldNote.textContent='Cotas marcadas como pagas somente após conferência manual no Nubank. Pedidos pendentes não reservam cotas, e o site não identifica pagamentos sozinho.';
   const progressBox=$('contributions-general-status');
   progressBox.hidden=false;
   const form=$('contribution-form');

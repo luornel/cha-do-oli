@@ -78,31 +78,6 @@
     }catch(e){message('login-error',e.message||'Não foi possível entrar.');}
     finally{btn.disabled=false;}
   });
-  $('signup').addEventListener('click',async ()=>{
-    const f=$('login-form');
-    if(!f.reportValidity())return;
-    const email=f.elements.email.value.trim().toLowerCase();
-    if(email!=='luaornelas@gmail.com'){message('login-error','Este painel aceita apenas o e-mail do administrador.');return;}
-    const btn=$('signup');btn.disabled=true;
-    message('login-error','Criando acesso…');
-    try{
-      const redirectTo=new URL('admin.html',window.location.href).href;
-      const {data,error}=await api.getClient().auth.signUp({
-        email,
-        password:f.elements.password.value,
-        options:{emailRedirectTo:redirectTo}
-      });
-      if(error)throw error;
-      f.elements.password.value='';
-      if(data.session){
-        await loggedIn();
-      }else{
-        message('login-error','Se for um novo cadastro, enviaremos um e-mail de confirmação. Abra o link recebido e volte para entrar com sua senha. Confira também o spam.');
-      }
-    }catch(e){
-      message('login-error','Não foi possível criar o acesso: '+(e.message||'tente novamente.'));
-    }finally{btn.disabled=false;}
-  });
   $('refresh').addEventListener('click',()=>load().catch(()=>{}));
   $('logout').addEventListener('click',async()=>{await api.getClient().auth.signOut();entries=[];show('dashboard',false);show('login-panel',true);message('login-error','Sessão encerrada.');});
   document.querySelectorAll('.filters button').forEach(button=>button.addEventListener('click',()=>{

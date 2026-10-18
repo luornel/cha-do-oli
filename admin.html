@@ -26,14 +26,13 @@
     </section>
     <section class="panel login-panel" id="login-panel" hidden>
       <h2>Entrar como administrador</h2>
-      <p>O acesso é exclusivo do e-mail <strong>luaornelas@gmail.com</strong>. No primeiro acesso, crie sua senha e confirme o e-mail enviado pelo Supabase.</p>
+      <p>Use a conta criada no Supabase Authentication e autorizada na tabela <code>oli_admins</code>.</p>
       <form id="login-form">
-        <label>E-mail <input name="email" type="email" required autocomplete="username" value="luaornelas@gmail.com" readonly></label>
-        <label>Senha <input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="Sua senha (mínimo de 8 caracteres)"></label>
+        <label>E-mail <input name="email" type="email" required autocomplete="username" placeholder="Seu e-mail"></label>
+        <label>Senha <input name="password" type="password" required autocomplete="current-password" placeholder="Senha da conta"></label>
         <button class="primary" type="submit">Acessar painel</button>
-        <button class="outline" id="signup" type="button">Criar meu acesso</button>
       </form>
-      <p class="message" id="login-error" role="status" aria-live="polite"></p>
+      <p class="message" id="login-error" role="alert"></p>
     </section>
     <section id="dashboard" hidden>
       <div class="dashboard-title"><h2>Visão geral</h2><div class="dash-actions"><button type="button" id="refresh" class="outline">Atualizar</button><button type="button" id="logout" class="outline">Sair</button></div></div>
@@ -47,7 +46,7 @@
       <div class="dashboard-title"><h2>Contribuições</h2><span class="counts" id="total-count">0 registros</span></div>
       <div class="filters" role="group" aria-label="Filtrar solicitações">
         <button type="button" data-filter="pending" class="active" aria-pressed="true">Pendentes</button>
-        <button type="button" data-filter="approved" aria-pressed="false">Confirmadas</button>
+        <button type="button" data-filter="confirmed" aria-pressed="false">Confirmadas</button>
         <button type="button" data-filter="rejected" aria-pressed="false">Rejeitadas</button>
         <button type="button" data-filter="all" aria-pressed="false">Todas</button>
       </div>

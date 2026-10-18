@@ -1,58 +1,63 @@
 # Chá do Oli 🧸
 
-Convite digital interativo para o chá de bebê do Oli.
+Convite web responsivo para o chá de bebê do Oli — **14 de novembro de 2026, 15h — 20h**, na Rua Fontoura Xavier, 550, Porto Alegre/RS.
 
-**Evento:** 14 de novembro de 2026, das 15h às 20h, na Rua Fontoura Xavier, 550, Porto Alegre/RS.
-
-## Abrir convite
-
-Quando o GitHub Pages estiver ativado, o endereço será:
-
-**https://luornel.github.io/cha-do-oli/**
+**Site:** https://luornel.github.io/cha-do-oli/  
+**Administração (após ativar Supabase):** https://luornel.github.io/cha-do-oli/admin.html
 
 ## Funcionalidades
 
-- Convite responsivo para celular e computador.
-- Integração com Google Maps.
-- Eventos de agenda para Google, Outlook e assinatura `webcal://` para Apple, com `.ics` como alternativa.
-- 22 sugestões de presentes com cotas e contribuição integral.
-- QR Code Pix com o valor selecionado e opção Pix Copia e Cola.
+- Convite, endereço e agendas Google, Apple (assinatura) e Outlook.
+- Catálogo de 22 presentes de R$ 20 a R$ 5.000, com opção integral e cotas acima de R$ 100.
+- QR Code Pix e Copia e Cola gerados no navegador usando a chave informada no convite.
+- **Controle opcional via Supabase:** progresso das cotas confirmadas, registro de contribuição após Pix e aprovação/rejeição manual em painel administrativo protegido por autenticação.
 
-## Estrutura
+## Organização
 
 ```text
-├── index.html                   # Página do convite
-├── assets/
-│   ├── styles.css              # Estilo responsivo
-│   ├── qrcode.js               # QR Code gerado no navegador
-│   └── site.js                 # Interações, cotas, Pix e agenda
-├── Cha_do_Oli_14_novembro.ics   # Evento para Apple Calendar
-├── .nojekyll                    # Publicação estática sem Jekyll
-└── README.md
+index.html                          Convite público
+admin.html                          Painel privado (login obrigatório)
+assets/
+  styles.css                        Estilos do convite
+  site.js                           Interações, Pix e cotas
+  qrcode.js                         Biblioteca de QR Code (MIT)
+  contributions.js                  Registro público de contribuições
+  admin.css / admin.js              Painel administrativo
+  supabase-service.js               Cliente/RPC do Supabase
+  supabase-config.js                URL + chave *publishable* (desativado por padrão)
+supabase/migrations/
+  20261018_cotas_manuais.sql         Banco, permissões e 22 presentes iniciais
+Cha_do_Oli_14_novembro.ics          Calendário
+.nojekyll                            Configuração do GitHub Pages
 ```
 
-## Atualização
+## Ativar o controle de cotas
 
-O GitHub Pages publica o conteúdo da branch `main`, pasta `/ (root)`. Não exige servidor, banco de dados ou instalação de pacotes.
+1. Crie um projeto em https://supabase.com/dashboard e anote **Project URL** e **Publishable key** (`sb_publishable_...`). A chave publishable é apropriada para código do navegador. **Nunca use `sb_secret_...`, `service_role` ou senhas no GitHub.**
+2. No Supabase, abra **SQL Editor** e execute `supabase/migrations/20261018_cotas_manuais.sql`. O SQL habilita RLS, proíbe leitura direta das tabelas e publica apenas RPC com permissões restritas.
+3. Em **Authentication → Users**, crie um usuário administrador com e-mail e senha. Copie o **User UID** dessa conta.
+4. No **SQL Editor**, execute, substituindo pelo UID real (não é o e-mail):
+   ```sql
+   insert into public.oli_admins (user_id)
+   values ('SEU-UID-AUTH-DO-ADMIN');
+   ```
+5. Configure **Authentication → URL Configuration → Site URL** como `https://luornel.github.io/cha-do-oli/`. Não habilite cadastro público para administradores; crie usuários administradores apenas pelo painel do Supabase e autorize cada UID na tabela `oli_admins`.
+6. Edite `assets/supabase-config.js` no repositório GitHub, substituindo URL, `publishableKey` e `enabled: true`. O GitHub Pages publicará a atualização. As configurações são iguais para o site e para `admin.html`.
+7. Acesse `admin.html` com o usuário autorizado. Faça um **Pix real de teste de pequeno valor**, registre o pagamento no convite, confira no Nubank e confirme no painel. Se desejar desfazer o teste, rejeite um pedido pendente; pagamentos já confirmados não são alteráveis pelo painel para preservar a auditoria.
 
-**Observações:** o site não reserva cotas nem confirma pagamentos. Confirme nome e valor do recebedor no aplicativo bancário antes de pagar. No iPhone, o botão Apple usa `webcal://` para oferecer uma assinatura de calendário com um único evento. Assinaturas são calendários separados e somente leitura, não eventos individuais editáveis. Se o iOS não abrir o link, o convite fornece o endereço HTTPS para assinar manualmente; um arquivo `.ics` também está disponível para importação pelo Mail. A chave Pix é exibida publicamente aos convidados.
+**Importante:** o painel não lê o extrato do Nubank. A solicitação do convidado **não significa pagamento recebido**. Somente confirme no painel depois de conferir o depósito no aplicativo do banco. Solicitações pendentes **não reservam cotas**; se duas pessoas pagarem as últimas cotas antes da conferência, uma solicitação poderá não ser confirmada. Combine um ajuste ou reembolso manualmente nesse caso.
 
-## Créditos
+### Segurança e privacidade
 
-Layout e organização do protótipo realizados com apoio do ChatGPT. QR Code produzido localmente por biblioteca JavaScript incluída no projeto (Kazuhiko Arase, licença MIT).
+- O navegador recebe **somente URL e chave publishable**. Não há chave privilegiada no repositório.
+- O convidado não consegue listar nome, contato, ID nem pagamentos dos demais convidados. A RPC pública retorna só quantidades agregadas.
+- O registro público insere apenas solicitações **pendentes**, e o valor é calculado no SQL; só o UID em `oli_admins` pode listar e confirmar pagamentos.
+- O painel não faz confirmação automática. Confirme antes no Nubank. Contatos são opcionais e visíveis só à administração.
+- O formulário público pode receber spam. Para um evento com grande tráfego, adicione CAPTCHA/rate limiting via Supabase Edge Function. Recomenda-se remover os dados pessoais após o evento.
+- A versão padrão do site usa `enabled: false` até o banco estar configurado; os presentes e Pix seguem funcionando normalmente.
 
+## Publicação
 
-## Controle de cotas (Supabase)
+O GitHub Pages usa `main` e `/(root)`. Arquivos estáticos, sem servidor Node ou credenciais privadas.
 
-- Banco em São Paulo. As solicitações recebidas pelo site entram como **pendentes**.
-- Somente o administrador autenticado e autorizado pode confirmar/rejeitar Pix.
-- O painel está em [`admin.html`](admin.html), com login via Supabase Auth.
-- Cadastre o administrador no Supabase Auth e autorize o UID na tabela `public.app_admins` (via dashboard SQL; nunca coloque chaves secretas no site).
-- A chave `sb_publishable_` presente no site é pública e não concede acesso administrativo.
-- O cadastro de contribuição não prova pagamento, e solicitações pendentes não reservam cotas.
-
-## Primeiro acesso ao painel
-
-O e-mail de administrador autorizado é **luaornelas@gmail.com**. A migration `authorize_verified_admin_email` vincula automaticamente a conta à tabela `app_admins` **somente após a confirmação do e-mail**, removendo a autorização caso o e-mail da conta seja alterado ou deixe de estar confirmado.
-
-Em **Supabase → Authentication → URL Configuration**, defina a Site URL como `https://luornel.github.io/cha-do-oli/admin.html` e permita essa mesma URL em Redirect URLs. Então, em `/admin.html`, informe uma senha pessoal (mínimo de 8 caracteres), clique **Criar meu acesso**, confirme o e-mail e volte ao painel para entrar. Se o cadastro já existir, use sua senha existente; nunca compartilhe senhas.
+QR Code incluído localmente: **QRCode for JavaScript**, Kazuhiko Arase (MIT). Desenvolvimento e prototipação com apoio do ChatGPT.
