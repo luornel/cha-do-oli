@@ -8,9 +8,9 @@
   function show(id,value=true){$(id).hidden=!value;}
   function message(id,text){$(id).textContent=text||'';}
   function render(){
-    const paid=entries.filter(e=>e.status==='approved');
+    const paid=entries.filter(e=>e.status==='confirmed');
     const pending=entries.filter(e=>e.status==='pending');
-    $('paid-units').textContent=String(paid.reduce((a,e)=>a+Number(e.quota_count),0));
+    $('paid-units').textContent=String(paid.reduce((a,e)=>a+Number(e.units),0));
     $('paid-amount').textContent=money(paid.reduce((a,e)=>a+Number(e.amount_cents),0));
     $('pending-count').textContent=String(pending.length);
     $('pending-amount').textContent=money(pending.reduce((a,e)=>a+Number(e.amount_cents),0));
@@ -21,22 +21,22 @@
     for(const e of selected){
       const card=document.createElement('article');card.className='entry';
       const header=document.createElement('div');header.className='entry-head';
-      const title=document.createElement('h3');title.textContent=e.guest_name;
-      const tag=document.createElement('span');tag.className='tag '+e.status;tag.textContent=({pending:'A conferir',approved:'Confirmada',rejected:'Rejeitada'})[e.status]||e.status;
+      const title=document.createElement('h3');title.textContent=e.payer_name;
+      const tag=document.createElement('span');tag.className='tag '+e.status;tag.textContent=({pending:'A conferir',confirmed:'Confirmada',rejected:'Rejeitada'})[e.status]||e.status;
       header.append(title,tag);
       const gift=document.createElement('p');gift.className='gift-name';gift.textContent=e.gift_name;
       const data=document.createElement('div');data.className='entry-data';
       const strong=document.createElement('strong');strong.textContent=money(e.amount_cents);
-      const label=document.createElement('div');label.textContent=`${e.quota_count} ${e.quota_count===1?'cota':'cotas'}`;
+      const label=document.createElement('div');label.textContent=`${e.units} ${e.units===1?'cota':'cotas'}`;
       data.append(strong,label);
       const meta=document.createElement('div');meta.className='entry-meta';
       const received=new Date(e.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
       const ref=String(e.id||'').split('-')[0].toUpperCase();
-      meta.textContent=`Contato: ${e.guest_contact||'Não informado'} · Referência: ${ref} · Pedido: ${received}`;
+      meta.textContent=`Contato: ${e.payer_contact||'Não informado'} · Referência: ${ref} · Pedido: ${received}`;
       card.append(header,gift,data,meta);
       if (e.status==='pending'){
         const actions=document.createElement('div');actions.className='entry-actions';
-        const confirm=document.createElement('button');confirm.type='button';confirm.className='primary';confirm.textContent='Confirmar Pix recebido';confirm.addEventListener('click',()=>review(e,'approved'));
+        const confirm=document.createElement('button');confirm.type='button';confirm.className='primary';confirm.textContent='Confirmar Pix recebido';confirm.addEventListener('click',()=>review(e,'confirmed'));
         const reject=document.createElement('button');reject.type='button';reject.className='outline';reject.textContent='Rejeitar';reject.addEventListener('click',()=>review(e,'rejected'));
         actions.append(confirm,reject);card.append(actions);
       }
@@ -44,16 +44,16 @@
     }
   }
   async function load(){
-    try{message('dashboard-message','Atualizando contribuições…');entries=(await api.rpc('admin_list_contributions'))||[];render();message('dashboard-message','');}
+    try{message('dashboard-message','Atualizando contribuições…');entries=(await api.rpc('oli_admin_list'))||[];render();message('dashboard-message','');}
     catch(e){message('dashboard-message','Falha ao carregar: '+e.message);throw e;}
   }
   async function review(e,status){
     if(busy)return;
-    const label=status==='approved'?'CONFIRMAR como pago':'REJEITAR';
-    const confirmation=`${label}: ${e.guest_name}\n${e.gift_name}\n${e.quota_count} cotas · ${money(e.amount_cents)}\n\n${status==='approved'?'Confira primeiro o recebimento no Nubank.':'A solicitação não poderá ser confirmada depois.'}`;
+    const label=status==='confirmed'?'CONFIRMAR como pago':'REJEITAR';
+    const confirmation=`${label}: ${e.payer_name}\n${e.gift_name}\n${e.units} cotas · ${money(e.amount_cents)}\n\n${status==='confirmed'?'Confira primeiro o recebimento no Nubank.':'A solicitação não poderá ser confirmada depois.'}`;
     if(!window.confirm(confirmation))return;
     busy=true;
-    try{message('dashboard-message','Salvando decisão…');await api.rpc('admin_review_contribution',{p_request_id:e.id,p_approve:status==='approved'});await load();}
+    try{message('dashboard-message','Salvando decisão…');await api.rpc('oli_admin_review',{p_id:e.id,p_status:status});await load();}
     catch(err){message('dashboard-message','Não foi possível concluir: '+err.message);}
     finally{busy=false;}
   }

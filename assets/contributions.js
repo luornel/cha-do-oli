@@ -5,7 +5,7 @@
   if (!api || !api.configured) return;  // convite atual continua funcionando sem banco
   const $=(id)=>document.getElementById(id);
   const moneyCents=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(n)||0)/100);
-  const state={progress:new Map(),requesting:false,recordedKey:null};
+  const state={progress:new Map(),requesting:false};
   const flow=$('contribution-flow');
   if (!flow) return;
   flow.hidden=false;
@@ -21,7 +21,7 @@
   const submit=form.querySelector('button[type=submit]');
   let current=null;
   function selection(){return window.OliInvite && window.OliInvite.getSelection();}
-  function reset(){form.hidden=true;confirmation.hidden=true;status.textContent='';submit.disabled=false;state.recordedKey=null;current=selection();paintSelection();}
+  function reset(){form.hidden=true;confirmation.hidden=true;status.textContent='';submit.disabled=false;current=selection();paintSelection();}
   function paintSelection(){
     current=selection();
     if (!current) return;
@@ -31,7 +31,7 @@
     document.querySelectorAll('#gift-grid .gift').forEach(card=>{
       const trigger=card.querySelector('[data-gift]');if(!trigger)return;
       const row=state.progress.get(Number(trigger.dataset.gift));if(!row)return;
-      const confirmed=Number(row.paid_quotas)||0;
+      const confirmed=Number(row.confirmed_quotas)||0;
       const total=Number(row.total_quotas)||0;
       const remaining=Math.max(0,total-confirmed);
       let el=card.querySelector('.gift-progress');
@@ -47,8 +47,8 @@
   }
   async function refresh(){
     try{
-      const rows=await api.rpc('gift_progress');
-      state.progress=new Map((rows||[]).map(r=>[Number(r.gift_id),{...r,total_quotas:Number(r.paid_quotas)+Number(r.remaining_quotas)}]));
+      const rows=await api.rpc('oli_progress');
+      state.progress=new Map((rows||[]).map(r=>[Number(r.gift_id),r]));
       progressRows();
       progressBox.textContent='Cotas contabilizadas após confirmação manual do Pix.';
     }catch(e){progressBox.textContent='O acompanhamento está temporariamente indisponível. O Pix continua funcionando.';}
@@ -56,10 +56,10 @@
   function isOverLimit(){
     if(!current)return false;
     const row=state.progress.get(current.giftId);if(!row)return false;
-    return current.units>Math.max(0,Number(row.total_quotas)-Number(row.paid_quotas));
+    return current.units>Math.max(0,Number(row.total_quotas)-Number(row.confirmed_quotas));
   }
   window.addEventListener('oli:gift-opened',reset);
-  window.addEventListener('oli:selection-changed',()=>{paintSelection();if(!confirmation.hidden)return;state.recordedKey=null;status.textContent='';});
+  window.addEventListener('oli:selection-changed',()=>{paintSelection();if(!confirmation.hidden)return;status.textContent='';});
   openButton.addEventListener('click',()=>{
     paintSelection();
     if(isOverLimit()){status.textContent='Quantidade indisponível. Escolha menos cotas ou outro presente.';return;}
@@ -74,15 +74,15 @@
     if(!form.reportValidity())return;
     const name=form.elements.payer_name.value.trim();
     const contact=form.elements.payer_contact.value.trim();
-    state.recordedKey='submitted';
+    
     state.requesting=true;submit.disabled=true;status.textContent='Registrando sua solicitação…';
     try{
-      const r=await api.rpc('request_contribution',{
-        p_gift_id:current.giftId,p_quota_count:current.units,p_guest_name:name,
-        p_guest_contact:contact || null
+      const r=await api.rpc('oli_request_contribution',{
+        p_gift_id:current.giftId,p_units:current.units,p_payer_name:name,
+        p_payer_contact:contact || null,p_request_nonce:crypto.randomUUID()
       });
       form.hidden=true;openButton.hidden=true;confirmation.hidden=false;
-      $('contribution-receipt').textContent=String((Array.isArray(r)?r[0]:r)?.request_reference||'').toUpperCase();
+      $('contribution-receipt').textContent=String((Array.isArray(r)?r[0]:r)?.id||'').split('-')[0].toUpperCase();
       status.textContent='Solicitação enviada. Aguarde a conferência do Pix pelo organizador.';
       await refresh();
     }catch(e){status.textContent=e.message||'Não foi possível registrar. Tente novamente.';submit.disabled=false;}
