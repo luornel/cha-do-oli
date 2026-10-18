@@ -137,20 +137,7 @@
   showCopyFallback(v);
  }
 
- // O link principal abre o Google Agenda diretamente, inclusive sem scripts no visualizador iOS.
- const appleCalendarLink=$('#calendar-apple-link');
- if(appleCalendarLink)appleCalendarLink.addEventListener('click',function(e){
-  // Safari pode oferecer compartilhamento nativo do arquivo .ics, sem depender de blob:download.
-  if(!(/iPhone|iPad|iPod/i.test(navigator.userAgent))||!navigator.share||!navigator.canShare||typeof File==='undefined')return;
-  try{
-   const file=new File([buildICS()],'Cha-do-Oli.ics',{type:'text/calendar;charset=utf-8'});
-   if(!navigator.canShare({files:[file]}))return;
-   e.preventDefault();
-   navigator.share({files:[file],title:'Chá do Oli • Evento para calendário'}).catch(()=>{
-    toast('Se não aparecer a opção Calendário, abra pelo Google Agenda ou importe o arquivo .ics no app Arquivos.');
-   });
-  }catch(err){}
- });
+ // Links Apple usam webcal:// para assinatura de calendário; sem Web Share API.
  const mapsLink=$('#maps-link'); if(mapsLink)mapsLink.addEventListener('click',()=>toast('Abrindo o Google Maps...'));
  $('#gift-grid').addEventListener('click',e=>{const btn=e.target.closest('[data-gift]');if(btn){e.preventDefault();openGift(btn.dataset.gift);}});
 
