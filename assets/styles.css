@@ -301,8 +301,29 @@ html{scroll-padding-top:20px}
 .offline-quota-range>summary{display:block;cursor:pointer;padding:11px;font-size:13px;color:#74573f;font-weight:750;touch-action:manipulation}
 .offline-quota-range>summary span{display:block;font-size:11px;font-weight:500;opacity:.87;margin-top:2px}
 @media(max-width:650px){.offline-quota-picker-inner{padding:9px}.offline-quota-option>summary{padding:13px 9px}}
+
 /* Instruções para assinatura de calendário Apple */
 .calendar-help-trigger{display:inline-block;margin-top:11px;font-size:12px;color:#745f49;text-underline-offset:3px}
 .apple-subscription-label{display:block;text-align:left;color:#856e56;font-size:12px;font-weight:750;margin:16px 0 5px}
 .apple-subscription-url{display:block;width:100%;min-width:0;padding:12px 11px;background:#fffdf9;border:1px solid #ddc6a9;color:#5f513f;border-radius:9px;font-size:13px;text-overflow:clip}
 .apple-help-note a{color:#72563d;font-weight:700}
+
+/* Contribuições: ativadas somente quando o Supabase estiver configurado. */
+.contributions-general-status{margin:0 auto 15px;text-align:center;font-size:13px;color:#73624e}
+.gift-progress{font-size:11px;color:#74624d;margin-top:10px;margin-bottom:14px;line-height:1.5}
+.gift-progress>span{display:block;font-weight:700}
+.gift-progress-track{height:7px;border-radius:20px;background:#e9dcc9;overflow:hidden;margin:5px 0}
+.gift-progress-track>span{display:block;height:100%;background:#80906e;border-radius:inherit;transition:width .3s}
+.gift-progress small{display:block;font-size:10px}
+.gift-closed{opacity:.55;pointer-events:none}
+.contribution-flow{margin-top:22px;text-align:left}
+.contribution-divider{height:1px;background:#e5d4bc;margin:18px 0}
+.contribution-title{font-family:Georgia,serif;font-size:22px;color:#604632;margin:0 0 5px}
+.contribution-explain,.contribution-selection{font-size:12px;color:#746652;line-height:1.65}
+.contribution-selection{padding:8px;background:#f5ead8;border-radius:8px;margin:12px 0;font-weight:700}
+.contribution-register,.contribution-flow form button{display:block;width:100%;margin:8px 0}
+.contribution-flow form label{display:block;font-size:12px;font-weight:700;color:#72583f;margin-top:12px}
+.contribution-flow form input{display:block;width:100%;padding:12px 13px;border:1px solid #d9c4a6;border-radius:9px;background:#fff;font-size:16px;margin:5px 0}
+.contribution-confirmation{padding:14px;border-radius:12px;background:#edf4e8;color:#445c3b;font-size:13px;line-height:1.6}
+.contribution-confirmation p{margin:5px 0}
+#contribution-status{font-size:12px;color:#735b40;line-height:1.6;text-align:center}

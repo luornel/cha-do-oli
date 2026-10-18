@@ -92,6 +92,7 @@
   $('#detail-selection').textContent=isFull?'Valor integral':`${quantity} ${quantity===1?'cota':'cotas'} de ${count}`;
   const amount=(isFull?cents(gift.price):quantity*quotaCents(gift))/100;
   $('#detail-price').textContent=money(amount);
+  window.dispatchEvent(new CustomEvent('oli:selection-changed'));
   $('#copy-fallback').hidden=true;
   try{pixPayload=buildPix(amount);drawQR(pixPayload);$('#copy-brcode').disabled=false;$('#copy-status').textContent='';}
   catch(e){pixPayload='';$('#qr-code').textContent='Código indisponível.';$('#copy-brcode').disabled=true;$('#copy-status').textContent='Verifique os dados do Pix.';}
@@ -104,7 +105,7 @@
   $('#quota-unit').textContent=`${money(quotaCents(gift)/100)} cada · ${giftQuotas(gift)} no total`;
   $('#copy-fallback').hidden=true;
   $('#detail-pix').textContent=data.pixKey||'Não configurada';
-  syncPay();setOverlay('gift-overlay',true);$('[data-close="gift"]').focus();
+  syncPay();setOverlay('gift-overlay',true);window.dispatchEvent(new CustomEvent('oli:gift-opened'));$('[data-close="gift"]').focus();
  }
  function selectionCopy(v){
   // O Safari do iPhone exige seleção visível e chamada síncrona durante o toque.
@@ -185,5 +186,6 @@
   const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='cha-do-oli-convite.html';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   toast('Arquivo dos convidados gerado! Confira e envie como documento.');
  });
+ window.OliInvite={getSelection:()=>gift ? {giftId:Number(gift.id),giftName:gift.name,units:mode==='full'||Number(gift.price)<=100?giftQuotas(gift):quantity,amountCents:Math.round(pixAmount()*100)} : null};
  render();
 })();
