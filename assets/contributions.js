@@ -9,10 +9,8 @@
   const flow=$('contribution-flow');
   if (!flow) return;
   flow.hidden=false;
-  const oldNote=document.querySelector('#presentes .fineprint');
-  if(oldNote)oldNote.textContent='Cotas marcadas como pagas somente após conferência manual no Nubank. Pedidos pendentes não reservam cotas, e o site não identifica pagamentos sozinho.';
   const progressBox=$('contributions-general-status');
-  progressBox.hidden=false;
+  progressBox.hidden=true;
   const form=$('contribution-form');
   const openButton=$('contribution-show-form');
   const status=$('contribution-status');
@@ -58,8 +56,8 @@
       const rows=await api.rpc('oli_progress');
       state.progress=new Map((rows||[]).map(r=>[Number(r.gift_id),r]));
       progressRows();
-      progressBox.textContent='Cotas contabilizadas após confirmação manual do Pix.';
-    }catch(e){progressBox.textContent='O acompanhamento está temporariamente indisponível. O Pix continua funcionando.';}
+      progressBox.textContent='';progressBox.hidden=true;
+    }catch(e){progressBox.hidden=false;progressBox.textContent='O acompanhamento está temporariamente indisponível. O Pix continua funcionando.';}
   }
   function isOverLimit(){
     if(!current)return false;

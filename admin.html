@@ -5,85 +5,117 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#f6efe1">
-  <title>Administração de cotas • Chá do Oli</title>
-  <link rel="stylesheet" href="assets/admin.css?v=manage-20261018">
+  <title>Administração de presentes · Chá do Oli</title>
+  <link rel="stylesheet" href="assets/admin.css?v=admin-ux-20261018">
 </head>
 <body>
   <header class="admin-head">
     <a href="./" class="back-link">← Voltar ao convite</a>
-    <span class="admin-mark">Chá do Oli · Administração</span>
+    <span class="admin-mark">Chá do Oli <span aria-hidden="true">♡</span> Administração</span>
   </header>
   <main class="admin-shell">
-    <section class="intro">
+    <section class="intro" aria-labelledby="page-title">
       <p class="chapter">BASTIDORES DA HISTÓRIA</p>
-      <h1>Controle de presentes</h1>
+      <h1 id="page-title">Controle de presentes</h1>
+      <p class="intro-description" id="page-description">Acompanhe contribuições e organize as cotas do Oli.</p>
     </section>
-    <section id="admin-unconfigured" class="panel" hidden>
+
+    <section id="admin-unconfigured" class="panel login-panel" hidden>
       <h2>Configuração pendente</h2>
-      <p>O painel foi desenvolvido, mas o Supabase ainda não está conectado. Configure <code>assets/supabase-config.js</code>, execute a migration SQL e autorize seu usuário no banco.</p>
-      <a href="https://supabase.com/dashboard/projects" target="_blank" rel="noopener">Abrir Supabase ↗</a>
+      <p>Não foi possível conectar o painel ao Supabase. Confira a configuração do projeto.</p>
     </section>
     <section class="panel login-panel" id="login-panel" hidden>
-      <h2>Entrar como administrador</h2>
-      <p>Entre com suas credenciais de administração.</p>
+      <div class="login-symbol" aria-hidden="true">✦</div>
+      <h2>Acesso administrativo</h2>
+      <p>Entre para gerenciar as contribuições e cotas.</p>
       <form id="login-form">
         <label>E-mail <input name="email" type="email" required autocomplete="username" placeholder="Seu e-mail"></label>
-        <label>Senha <input name="password" type="password" required autocomplete="current-password" placeholder="Senha da conta"></label>
-        <button class="primary" type="submit">Acessar painel</button>
+        <label>Senha <input name="password" type="password" required autocomplete="current-password" placeholder="Sua senha"></label>
+        <button class="primary" type="submit">Entrar no painel <span aria-hidden="true">→</span></button>
       </form>
       <p class="message" id="login-error" role="alert"></p>
     </section>
-    <section id="dashboard" hidden>
-      <div class="dashboard-title"><h2>Visão geral</h2><div class="dash-actions"><button type="button" id="refresh" class="outline">Atualizar</button><button type="button" id="logout" class="outline">Sair</button></div></div>
-      <div class="metrics">
-        <div class="metric"><span>Cotas confirmadas</span><strong id="paid-units">0</strong></div>
-        <div class="metric"><span>Valor confirmado</span><strong id="paid-amount">R$ 0</strong></div>
-        <div class="metric"><span>Solicitações pendentes</span><strong id="pending-count">0</strong></div>
-        <div class="metric"><span>Valor pendente</span><strong id="pending-amount">R$ 0</strong></div>
+
+    <div id="dashboard" hidden>
+      <div class="dashboard-top">
+        <div>
+          <p class="eyebrow">RESUMO DO CHÁ</p>
+          <h2>Visão geral</h2>
+          <p>Valores contabilizados e solicitações aguardando conferência.</p>
+        </div>
+        <div class="dash-actions"><button type="button" id="refresh" class="outline">↻ Atualizar</button><button type="button" id="logout" class="ghost">Sair</button></div>
       </div>
-      <section class="panel warning"><strong>Confirmação manual</strong><p>Antes de confirmar, confira o valor e o nome de quem pagou no aplicativo Nubank. Uma solicitação enviada pelo convidado <em>não comprova</em> a realização do Pix. Pedidos pendentes não reservam cotas.</p></section>
-      <section class="panel manager-panel" aria-labelledby="quotas-heading">
-        <div class="manager-heading"><h2 id="quotas-heading">Ajustar cotas</h2><p>Adicione, remova ou zere as cotas contabilizadas de cada presente. O histórico dos Pix permanece preservado.</p></div>
-        <form id="quota-adjust-form">
-          <div class="manager-grid">
-            <label>Presente
-              <select id="manage-gift" name="gift_id" required><option value="">Carregando presentes…</option></select>
-            </label>
-            <label>Ação
-              <select name="action" id="manage-action">
-                <option value="add">Adicionar cotas</option>
-                <option value="remove">Remover cotas</option>
-                <option value="reset">Zerar cotas</option>
-              </select>
-            </label>
-            <label id="manage-units-box">Quantidade de cotas
-              <input type="number" id="manage-units" name="units" min="1" max="10000" step="1" value="1" required inputmode="numeric" />
-            </label>
-          </div>
-          <p class="manager-balance" id="manage-balance" aria-live="polite"></p>
-          <label class="manager-note-label">Observação (opcional)
-            <input type="text" name="note" maxlength="200" placeholder="Ex.: presente recebido fora do site" />
-          </label>
-          <button class="primary" type="submit" id="manage-submit">Salvar ajuste</button>
-          <p class="message" id="manage-message" role="status"></p>
-        </form>
-        <details class="adjustment-history"><summary>Ver histórico dos ajustes manuais</summary><div id="adjustment-history-list" class="history-list"></div></details>
+      <div class="metrics" aria-label="Resumo das contribuições">
+        <div class="metric metric-primary"><span>Valor contabilizado</span><strong id="paid-amount">R$ 0,00</strong><small>Pix confirmados + ajustes manuais</small></div>
+        <div class="metric"><span>Cotas contabilizadas</span><strong id="paid-units">0</strong><small>Em todos os presentes</small></div>
+        <div class="metric metric-attention"><span>Aguardando conferência</span><strong id="pending-count">0</strong><small>Solicitações pendentes</small></div>
+        <div class="metric"><span>Valor pendente</span><strong id="pending-amount">R$ 0,00</strong><small>Ainda não confirmado</small></div>
+      </div>
+      <nav class="quick-nav" aria-label="Ir para uma seção do painel">
+        <a href="#contribuicoes"><span class="quick-icon" aria-hidden="true">✓</span><span><strong>Conferir pagamentos</strong><small>Ver solicitações e confirmar Pix</small></span><span aria-hidden="true">↗</span></a>
+        <a href="#gerenciar-cotas"><span class="quick-icon" aria-hidden="true">±</span><span><strong>Gerenciar cotas</strong><small>Adicionar, remover ou zerar</small></span><span aria-hidden="true">↗</span></a>
+      </nav>
+
+      <section class="content-section" id="contribuicoes" aria-labelledby="contributions-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">01 · PAGAMENTOS</p><h2 id="contributions-heading">Contribuições</h2><p>Confira cada Pix recebido antes de aprovar.</p></div>
+          <span class="counts" id="total-count">0 registros</span>
+        </div>
+        <div class="help-strip"><span aria-hidden="true">ⓘ</span> Solicitações dos convidados não são pagamentos confirmados. Confira no Nubank antes de aprovar.</div>
+        <div class="filters" role="group" aria-label="Filtrar contribuições">
+          <button type="button" data-filter="pending" class="active" aria-pressed="true">Pendentes <span id="pending-filter-count" class="filter-count"></span></button>
+          <button type="button" data-filter="confirmed" aria-pressed="false">Confirmadas</button>
+          <button type="button" data-filter="rejected" aria-pressed="false">Rejeitadas</button>
+          <button type="button" data-filter="all" aria-pressed="false">Todas</button>
+        </div>
+        <p id="dashboard-message" class="message" role="status"></p>
+        <div id="entries" class="entries" aria-live="polite"></div>
       </section>
-      <div class="dashboard-title"><h2>Contribuições</h2><span class="counts" id="total-count">0 registros</span></div>
-      <div class="filters" role="group" aria-label="Filtrar solicitações">
-        <button type="button" data-filter="pending" class="active" aria-pressed="true">Pendentes</button>
-        <button type="button" data-filter="confirmed" aria-pressed="false">Confirmadas</button>
-        <button type="button" data-filter="rejected" aria-pressed="false">Rejeitadas</button>
-        <button type="button" data-filter="all" aria-pressed="false">Todas</button>
-      </div>
-      <p id="dashboard-message" class="message" role="status"></p>
-      <div id="entries" class="entries" aria-live="polite"></div>
-    </section>
+
+      <section class="content-section" id="gerenciar-cotas" aria-labelledby="quotas-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">02 · AJUSTES</p><h2 id="quotas-heading">Gerenciar cotas</h2><p>Corrija a quantidade contabilizada em qualquer presente.</p></div>
+        </div>
+        <div class="panel manager-panel">
+          <form id="quota-adjust-form">
+            <label class="manager-gift-label" for="manage-gift">1. Selecione o presente</label>
+            <select id="manage-gift" name="gift_id" required><option value="">Carregando presentes…</option></select>
+            <div class="balance-card" aria-live="polite">
+              <span>Saldo atual</span>
+              <strong id="manage-balance-count">—</strong>
+              <small id="manage-balance">Selecione um presente para consultar as cotas.</small>
+            </div>
+            <fieldset class="manager-actions">
+              <legend>2. O que você deseja fazer?</legend>
+              <input id="manage-action" name="action" type="hidden" value="add">
+              <div class="action-choices" role="group" aria-label="Tipo de ajuste">
+                <button type="button" class="action-choice active" data-manage-action="add" aria-pressed="true"><span class="choice-icon" aria-hidden="true">＋</span><strong>Adicionar cotas</strong><small>Registrar cotas recebidas fora do site</small></button>
+                <button type="button" class="action-choice" data-manage-action="remove" aria-pressed="false"><span class="choice-icon" aria-hidden="true">−</span><strong>Remover cotas</strong><small>Descontar cotas contabilizadas</small></button>
+                <button type="button" class="action-choice" data-manage-action="reset" aria-pressed="false"><span class="choice-icon" aria-hidden="true">↺</span><strong>Zerar cotas</strong><small>Voltar o saldo deste presente a zero</small></button>
+              </div>
+            </fieldset>
+            <div class="manager-amount">
+              <label id="manage-units-box" for="manage-units">3. Quantas cotas?
+                <input type="number" id="manage-units" name="units" min="1" max="10000" step="1" value="1" required inputmode="numeric">
+              </label>
+              <div class="balance-preview" aria-live="polite"><span>Saldo após o ajuste</span><strong id="manage-preview">—</strong><small id="manage-preview-caption">Selecione a ação e informe a quantidade.</small></div>
+            </div>
+            <label class="manager-note-label" for="manage-note">Observação (opcional)
+              <input id="manage-note" type="text" name="note" maxlength="200" placeholder="Ex.: corrigir contagem do presente">
+            </label>
+            <p class="adjust-info"><span aria-hidden="true">ⓘ</span> Ajustes alteram o saldo exibido no convite. O histórico dos pagamentos continua preservado.</p>
+            <button class="primary manage-submit" type="submit" id="manage-submit">Adicionar cotas</button>
+            <p class="message" id="manage-message" role="status"></p>
+          </form>
+          <details class="adjustment-history"><summary>Histórico de ajustes manuais <span aria-hidden="true">⌄</span></summary><div id="adjustment-history-list" class="history-list"></div></details>
+        </div>
+      </section>
+    </div>
   </main>
-  <footer>Chá do Oli ♡ · Apenas administradores autorizados</footer>
+  <footer>Chá do Oli ♡ · Área restrita aos administradores</footer>
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=admin-fix-20261018"></script>
+  <script defer src="assets/admin.js?v=admin-ux-20261018"></script>
 </body>
 </html>

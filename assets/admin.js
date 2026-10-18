@@ -13,6 +13,7 @@
     $('paid-units').textContent=String(balances.reduce((a,g)=>a+Number(g.confirmed_quotas),0));
     $('paid-amount').textContent=money(balances.reduce((a,g)=>a+Number(g.confirmed_quotas)*Number(g.unit_price_cents),0));
     $('pending-count').textContent=String(pending.length);
+    $('pending-filter-count').textContent=pending.length ? String(pending.length) : '';
     $('pending-amount').textContent=money(pending.reduce((a,e)=>a+Number(e.amount_cents),0));
     $('total-count').textContent=`${entries.length} registros`;
     const selected=entries.filter(e=>filter==='all'||e.status===filter);
@@ -39,6 +40,13 @@
         const confirm=document.createElement('button');confirm.type='button';confirm.className='primary';confirm.textContent='Confirmar Pix recebido';confirm.addEventListener('click',()=>review(e,'confirmed'));
         const reject=document.createElement('button');reject.type='button';reject.className='outline';reject.textContent='Rejeitar';reject.addEventListener('click',()=>review(e,'rejected'));
         actions.append(confirm,reject);card.append(actions);
+      }
+      if(e.status==='confirmed'){
+        const corrections=document.createElement('div');corrections.className='entry-actions';
+        const shortcut=document.createElement('button');shortcut.type='button';shortcut.className='outline';
+        shortcut.textContent='− Remover cotas deste presente';
+        shortcut.title='Abre a gestão de cotas com este presente selecionado; mantém o histórico do Pix';
+        shortcut.addEventListener('click',()=>openRemoval(e));corrections.append(shortcut);card.append(corrections);
       }
       container.append(card);
     }
@@ -78,15 +86,54 @@
     const mode=$('manage-action').value;
     const box=$('manage-units-box'),input=$('manage-units');
     box.hidden=mode==='reset';input.required=mode!=='reset';
-    if(!g){$('manage-balance').textContent='Selecione um presente.';return;}
+    for(const btn of document.querySelectorAll('[data-manage-action]')){
+      const yes=btn.dataset.manageAction===mode;
+      btn.classList.toggle('active',yes);btn.setAttribute('aria-pressed',String(yes));
+    }
+    const submit=$('manage-submit');
+    submit.textContent=mode==='reset'?'Zerar cotas deste presente':mode==='remove'?'Remover cotas':'Adicionar cotas';
+    submit.classList.toggle('danger',mode!=='add');
+    if(!g){
+      $('manage-balance').textContent='Selecione um presente.';
+      $('manage-balance-count').textContent='—';
+      $('manage-preview').textContent='—';
+      $('manage-preview-caption').textContent='Selecione o presente.';
+      submit.disabled=true;return;
+    }
     const paid=Number(g.confirmed_quotas),unit=money(g.unit_price_cents);
-    const total=g.is_unlimited?'disponibilidade ilimitada':`de ${g.total_quotas} cotas totais`;
-    $('manage-balance').textContent=`${paid} ${paid===1?'cota contabilizada':'cotas contabilizadas'} · ${unit} por cota · ${total}.`;
-    const submit=$('manage-submit');submit.textContent=mode==='reset'?'Zerar cotas deste presente':mode==='remove'?'Remover cotas':'Adicionar cotas';
-    submit.classList.toggle('danger',mode==='reset');
+    const total=g.is_unlimited?'Contribuição livre · disponibilidade ilimitada':`${Math.max(0,Number(g.total_quotas)-paid)} cotas ainda disponíveis de ${g.total_quotas}`;
+    $('manage-balance-count').textContent=`${paid} ${paid===1?'cota':'cotas'}`;
+    $('manage-balance').textContent=`${unit} por cota · ${total}`;
+    const units=mode==='reset'?0:Number(input.value);
+    const after=mode==='reset'?0:mode==='add'?paid+units:paid-units;
+    const valid=mode==='reset'?paid>0:
+      Number.isInteger(units)&&units>=1&&units<=10000&&after>=0&&
+      (g.is_unlimited||after<=Number(g.total_quotas));
+    const preview=$('manage-preview'),caption=$('manage-preview-caption');
+    preview.textContent=valid?`${after} ${after===1?'cota':'cotas'}`:'Quantidade inválida';
+    caption.textContent=mode==='reset'?'O saldo contabilizado ficará zerado.':
+      mode==='remove'?'Cotas descontadas do saldo público.':'Cotas acrescentadas ao saldo público.';
+    preview.parentElement.classList.toggle('invalid',!valid);
+    submit.disabled=!valid||busy;
   }
-  $('manage-gift').addEventListener('change',paintManager);
-  $('manage-action').addEventListener('change',paintManager);
+  function openRemoval(e){
+    document.getElementById('manage-gift').value=String(e.gift_id);
+    document.getElementById('manage-action').value='remove';
+    document.getElementById('manage-units').value=String(e.units);
+    document.getElementById('manage-note').value=`Revisão do registro ${String(e.id||'').split('-')[0].toUpperCase()}`;
+    paintManager();
+    message('manage-message','Confira a quantidade e o saldo antes de salvar. O registro original permanece no histórico.');
+    document.getElementById('gerenciar-cotas').scrollIntoView({behavior:'smooth',block:'start'});
+    document.getElementById('manage-units').focus({preventScroll:true});
+  }
+  $('manage-gift').addEventListener('change',()=>{message('manage-message','');paintManager();});
+  $('manage-units').addEventListener('input',paintManager);
+  document.querySelectorAll('[data-manage-action]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      $('manage-action').value=btn.dataset.manageAction;
+      message('manage-message','');paintManager();
+    });
+  });
   $('quota-adjust-form').addEventListener('submit',async ev=>{
     ev.preventDefault();if(busy)return;
     const form=ev.currentTarget,selected=balances.find(g=>String(g.gift_id)===form.elements.gift_id.value);
@@ -129,12 +176,9 @@
       const reason=String(e?.message||'Erro temporário ao carregar os dados.');
       const unauthorized=/acesso administrativo não autorizado|permission denied|não autorizado|unauthorized/i.test(reason);
       if(unauthorized){
-        show('dashboard',false);
-        show('login-panel',true);
+        show('dashboard',false);show('login-panel',true);
         message('login-error','Sua conta está autenticada, mas ainda não possui permissão administrativa.');
       }else{
-        // Erros de SQL, conexão e carregamento não invalidam a sessão.
-        // O administrador pode usar "Atualizar" depois da recuperação.
         message('dashboard-message','Falha ao carregar os dados: '+reason+' Use Atualizar para tentar novamente.');
       }
     }
