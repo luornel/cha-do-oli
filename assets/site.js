@@ -56,7 +56,7 @@
   $('#gift-grid').innerHTML=items.length?items.map(g=>{
    const n=giftQuotas(g),one=quotaCents(g)/100,free=unlimitedGift(g),split=!free&&Number(g.price)>=500&&n>1,band=free?'free':Number(g.price)<=100?'low':Number(g.price)<=500?'medium':'high';
    const quotaText=free?`Cotas livres de <strong>${money(g.price)}</strong>`:split?`${n} cotas de <strong>${money(one)}</strong> (opcional)`:'Valor integral';
-   return `<article class="gift${free?' gift-unlimited':''}" data-band="${band}"><div class="gift-symbol" aria-hidden="true">${safe(g.emoji||'🎁')}</div><h3>${safe(g.name)}</h3><p class="gift-desc">${safe(g.description)}</p><div class="gift-price-label">${free?'Valor por cota':'Valor total'}</div><div class="gift-price">${money(g.price)}</div><div class="gift-quota">${quotaText}</div><a class="gift-btn" href="#presentear-${Number(g.id)}" data-gift="${Number(g.id)}" aria-label="Escolher ${safe(g.name)}">${free?'Escolher minha contribuição →':split?'Ver formas de presentear →':'Presentear →'}</a></article>`;
+   return `<article class="gift${free?' gift-unlimited':''}" data-band="${band}"><div class="gift-symbol" aria-hidden="true">${safe(g.emoji||'🎁')}</div><h3>${safe(g.name)}</h3><p class="gift-desc">${safe(g.description)}</p><div class="gift-price-label">${free?'Valor por cota':'Valor total'}</div><div class="gift-price">${money(g.price)}</div><div class="gift-quota">${quotaText}</div><a class="gift-btn" href="#presentear-${Number(g.id)}" data-gift="${Number(g.id)}" aria-label="Escolher ${safe(g.name)}">${free?'Presentear':split?'Ver formas de presentear →':'Presentear →'}</a></article>`;
   }).join(''):'<p class="fineprint" style="grid-column:1/-1">Nenhum presente disponível.</p>';
  }
 
