@@ -26,13 +26,14 @@
     </section>
     <section class="panel login-panel" id="login-panel" hidden>
       <h2>Entrar como administrador</h2>
-      <p>Use a conta criada no Supabase Authentication e autorizada na tabela <code>app_admins</code>.</p>
+      <p>O acesso é exclusivo do e-mail <strong>luaornelas@gmail.com</strong>. No primeiro acesso, crie sua senha e confirme o e-mail enviado pelo Supabase.</p>
       <form id="login-form">
-        <label>E-mail <input name="email" type="email" required autocomplete="username" placeholder="Seu e-mail"></label>
-        <label>Senha <input name="password" type="password" required autocomplete="current-password" placeholder="Senha da conta"></label>
+        <label>E-mail <input name="email" type="email" required autocomplete="username" value="luaornelas@gmail.com" readonly></label>
+        <label>Senha <input name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="Sua senha (mínimo de 8 caracteres)"></label>
         <button class="primary" type="submit">Acessar painel</button>
+        <button class="outline" id="signup" type="button">Criar meu acesso</button>
       </form>
-      <p class="message" id="login-error" role="alert"></p>
+      <p class="message" id="login-error" role="status" aria-live="polite"></p>
     </section>
     <section id="dashboard" hidden>
       <div class="dashboard-title"><h2>Visão geral</h2><div class="dash-actions"><button type="button" id="refresh" class="outline">Atualizar</button><button type="button" id="logout" class="outline">Sair</button></div></div>

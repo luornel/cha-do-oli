@@ -8,7 +8,7 @@
     if (!configured) return null;
     if (!window.supabase || typeof window.supabase.createClient !== 'function') throw new Error('A biblioteca de conexão não carregou. Recarregue a página.');
     if (!client) client = window.supabase.createClient(cfg.url, cfg.publishableKey, {
-      auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: false },
+      auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true },
       realtime: { params: { eventsPerSecond: 1 } }
     });
     return client;

@@ -50,3 +50,9 @@ Layout e organização do protótipo realizados com apoio do ChatGPT. QR Code pr
 - Cadastre o administrador no Supabase Auth e autorize o UID na tabela `public.app_admins` (via dashboard SQL; nunca coloque chaves secretas no site).
 - A chave `sb_publishable_` presente no site é pública e não concede acesso administrativo.
 - O cadastro de contribuição não prova pagamento, e solicitações pendentes não reservam cotas.
+
+## Primeiro acesso ao painel
+
+O e-mail de administrador autorizado é **luaornelas@gmail.com**. A migration `authorize_verified_admin_email` vincula automaticamente a conta à tabela `app_admins` **somente após a confirmação do e-mail**, removendo a autorização caso o e-mail da conta seja alterado ou deixe de estar confirmado.
+
+Em **Supabase → Authentication → URL Configuration**, defina a Site URL como `https://luornel.github.io/cha-do-oli/admin.html` e permita essa mesma URL em Redirect URLs. Então, em `/admin.html`, informe uma senha pessoal (mínimo de 8 caracteres), clique **Criar meu acesso**, confirme o e-mail e volte ao painel para entrar. Se o cadastro já existir, use sua senha existente; nunca compartilhe senhas.
