@@ -174,14 +174,18 @@
       +'\n'+money(e.amount_cents)+' · Referência '+ref
       +'\n\n'+impact
       +'\n\nEsta operação não cancela nem devolve o Pix no Nubank.'
+      +'\nCaso o saldo fique negativo, será ajustado automaticamente para zero.'
       +'\nSerá mantido apenas um histórico técnico sem dados pessoais.';
     if(!window.confirm(warning))return;
     busy=true;
     message('dashboard-message','Excluindo registro…');
     try{
-      await api.rpc('oli_admin_delete_contribution',{p_id:e.id});
+      const result=await api.rpc('oli_admin_delete_contribution',{p_id:e.id});
       await load();
-      message('dashboard-message','Registro excluído. Os totais foram atualizados.');
+      const corrected=Number(result?.auto_reset_units)||0;
+      message('dashboard-message',corrected>0
+        ?`Registro excluído. O saldo negativo foi corrigido automaticamente para zero (+${corrected} ${corrected===1?'cota':'cotas'} de compensação).`
+        :'Registro excluído. Os totais foram atualizados.');
     }catch(err){
       message('dashboard-message','Não foi possível excluir o registro: '+(err?.message||'Erro de conexão.'));
     }finally{busy=false;}
