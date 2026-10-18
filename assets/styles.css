@@ -344,3 +344,6 @@ html{scroll-padding-top:20px}
 .contribution-explain{text-align:center;margin:7px auto 14px;max-width:380px;font-size:13px}
 .contribution-register--green{background:#498650;color:white;border:1px solid #407e47;box-shadow:0 4px 12px #39703b20;font-size:14px;padding:14px}
 .contribution-register--green:hover{background:#386f40}
+
+/* Resumo do presente centralizado na confirmação de contribuição */
+.contribution-selection{text-align:center;}
