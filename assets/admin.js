@@ -120,8 +120,24 @@
     finally{busy=false;}
   }
   async function loggedIn(){
-    try{await load();show('login-panel',false);show('dashboard',true);}
-    catch(e){await api.getClient().auth.signOut();show('dashboard',false);show('login-panel',true);message('login-error','Usuário autenticado, mas sem autorização de administrador.');}
+    show('login-panel',false);
+    show('dashboard',true);
+    try{
+      await load();
+      message('login-error','');
+    }catch(e){
+      const reason=String(e?.message||'Erro temporário ao carregar os dados.');
+      const unauthorized=/acesso administrativo não autorizado|permission denied|não autorizado|unauthorized/i.test(reason);
+      if(unauthorized){
+        show('dashboard',false);
+        show('login-panel',true);
+        message('login-error','Sua conta está autenticada, mas ainda não possui permissão administrativa.');
+      }else{
+        // Erros de SQL, conexão e carregamento não invalidam a sessão.
+        // O administrador pode usar "Atualizar" depois da recuperação.
+        message('dashboard-message','Falha ao carregar os dados: '+reason+' Use Atualizar para tentar novamente.');
+      }
+    }
   }
   async function start(){
     if(!api||!api.configured){show('admin-unconfigured',true);return;}
