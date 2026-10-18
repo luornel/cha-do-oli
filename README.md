@@ -1,9 +1,8 @@
 # Chá do Oli 🧸
 
-Convite web responsivo para o chá de bebê do Oli — **14 de novembro de 2026, 15h — 20h**, na Rua Fontoura Xavier, 550, Porto Alegre/RS.
+Convite web responsivo para o chá de bebê do Oli.
 
 **Site:** https://luornel.github.io/cha-do-oli/  
-**Administração (após ativar Supabase):** https://luornel.github.io/cha-do-oli/admin.html
 
 ## Funcionalidades
 
