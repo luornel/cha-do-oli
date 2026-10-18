@@ -48,6 +48,12 @@
         shortcut.title='Abre a gestão de cotas com este presente selecionado; mantém o histórico do Pix';
         shortcut.addEventListener('click',()=>openRemoval(e));corrections.append(shortcut);card.append(corrections);
       }
+      const deleteRow=document.createElement('div');deleteRow.className='entry-remove';
+      const deleteButton=document.createElement('button');deleteButton.type='button';
+      deleteButton.className='entry-remove-btn';deleteButton.textContent='Excluir registro';
+      deleteButton.setAttribute('aria-label','Excluir registro de '+e.payer_name+' para '+e.gift_name);
+      deleteButton.addEventListener('click',()=>deleteContribution(e));
+      deleteRow.append(deleteButton);card.append(deleteRow);
       container.append(card);
     }
   }
@@ -156,6 +162,30 @@
     }catch(err){message('manage-message',err.message||'Não foi possível ajustar as cotas.');}
     finally{busy=false;$('manage-submit').disabled=false;}
   });
+  async function deleteContribution(e){
+    if(busy)return;
+    const ref=String(e.id||'').split('-')[0].toUpperCase();
+    const confirmed=e.status==='confirmed';
+    const impact=confirmed
+      ?'Este Pix está marcado como confirmado: o valor e as cotas serão descontados dos totais do site.'
+      :'O registro desaparecerá da lista de contribuições.';
+    const warning='EXCLUIR DEFINITIVAMENTE esta contribuição?'
+      +'\n\n'+e.payer_name+' · '+e.gift_name
+      +'\n'+money(e.amount_cents)+' · Referência '+ref
+      +'\n\n'+impact
+      +'\n\nEsta operação não cancela nem devolve o Pix no Nubank.'
+      +'\nSerá mantido apenas um histórico técnico sem dados pessoais.';
+    if(!window.confirm(warning))return;
+    busy=true;
+    message('dashboard-message','Excluindo registro…');
+    try{
+      await api.rpc('oli_admin_delete_contribution',{p_id:e.id});
+      await load();
+      message('dashboard-message','Registro excluído. Os totais foram atualizados.');
+    }catch(err){
+      message('dashboard-message','Não foi possível excluir o registro: '+(err?.message||'Erro de conexão.'));
+    }finally{busy=false;}
+  }
   async function review(e,status){
     if(busy)return;
     const label=status==='confirmed'?'CONFIRMAR como pago':'REJEITAR';
@@ -169,16 +199,19 @@
   async function loggedIn(){
     show('login-panel',false);
     show('dashboard',true);
+    show('logout',false);
     try{
       await load();
+      show('logout',true);
       message('login-error','');
     }catch(e){
       const reason=String(e?.message||'Erro temporário ao carregar os dados.');
       const unauthorized=/acesso administrativo não autorizado|permission denied|não autorizado|unauthorized/i.test(reason);
       if(unauthorized){
-        show('dashboard',false);show('login-panel',true);
+        show('dashboard',false);show('login-panel',true);show('logout',false);
         message('login-error','Sua conta está autenticada, mas ainda não possui permissão administrativa.');
       }else{
+        show('logout',true);
         message('dashboard-message','Falha ao carregar os dados: '+reason+' Use Atualizar para tentar novamente.');
       }
     }
@@ -201,7 +234,7 @@
     finally{btn.disabled=false;}
   });
   $('refresh').addEventListener('click',()=>load().catch(()=>{}));
-  $('logout').addEventListener('click',async()=>{await api.getClient().auth.signOut();entries=[];show('dashboard',false);show('login-panel',true);message('login-error','Sessão encerrada.');});
+  $('logout').addEventListener('click',async()=>{await api.getClient().auth.signOut();entries=[];show('dashboard',false);show('logout',false);show('login-panel',true);message('login-error','Sessão encerrada.');});
   document.querySelectorAll('.filters button').forEach(button=>button.addEventListener('click',()=>{
     filter=button.dataset.filter;
     document.querySelectorAll('.filters button').forEach(b=>{const yes=b===button;b.classList.toggle('active',yes);b.setAttribute('aria-pressed',String(yes));});

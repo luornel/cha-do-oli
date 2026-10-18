@@ -6,12 +6,16 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#f6efe1">
   <title>Administração de presentes · Chá do Oli</title>
-  <link rel="stylesheet" href="assets/admin.css?v=admin-ux-20261018">
+  <link rel="stylesheet" href="assets/admin.css?v=admin-delete-20261018">
 </head>
 <body>
   <header class="admin-head">
-    <a href="./" class="back-link">← Voltar ao convite</a>
-    <span class="admin-mark">Chá do Oli <span aria-hidden="true">♡</span> Administração</span>
+    <a href="./" class="back-link" aria-label="Voltar ao convite">
+      <span class="back-long">← Voltar ao convite</span>
+      <span class="back-short">← Convite</span>
+    </a>
+    <span class="admin-mark">Chá do Oli <span aria-hidden="true">♡</span></span>
+    <button type="button" id="logout" class="ghost header-logout" hidden>Sair</button>
   </header>
   <main class="admin-shell">
     <section class="intro" aria-labelledby="page-title">
@@ -43,7 +47,7 @@
           <h2>Visão geral</h2>
           <p>Valores contabilizados e solicitações aguardando conferência.</p>
         </div>
-        <div class="dash-actions"><button type="button" id="refresh" class="outline">↻ Atualizar</button><button type="button" id="logout" class="ghost">Sair</button></div>
+        <div class="dash-actions"><button type="button" id="refresh" class="outline">↻ Atualizar</button></div>
       </div>
       <div class="metrics" aria-label="Resumo das contribuições">
         <div class="metric metric-primary"><span>Valor contabilizado</span><strong id="paid-amount">R$ 0,00</strong><small>Pix confirmados + ajustes manuais</small></div>
@@ -116,6 +120,6 @@
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=admin-ux-20261018"></script>
+  <script defer src="assets/admin.js?v=admin-delete-20261018"></script>
 </body>
 </html>

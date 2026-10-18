@@ -10,3 +10,20 @@
 @media(max-width:620px){.admin-head{padding:17px 16px}.admin-mark{font-size:12px}.back-link{font-size:12px}.admin-shell{padding:26px 16px 65px}.intro{margin-bottom:22px}.dashboard-top{align-items:flex-start}.dashboard-top h2{font-size:29px}.dashboard-top p:not(.eyebrow){max-width:250px}.dash-actions{flex-direction:column}.dash-actions button{min-height:37px;padding:7px 10px}.metrics{gap:8px}.metric{padding:14px 12px}.metric strong{font-size:21px}.metric small{font-size:10px}.quick-nav{gap:8px}.quick-nav a{padding:11px 9px;gap:6px;align-items:flex-start}.quick-nav small{display:none}.quick-icon{width:26px;height:26px;font-size:17px;flex-shrink:0}.quick-nav strong{font-size:12px}.content-section{margin-top:27px}.section-heading h2{font-size:30px}.section-heading p:not(.eyebrow){font-size:12px}.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.filters button{justify-content:center}.action-choices{gap:7px}.action-choice{padding:11px 8px;gap:5px}.action-choice.active{padding:10px 7px}.action-choice strong{font-size:12px}.action-choice small{font-size:10px}.choice-icon{width:30px;height:30px;font-size:20px}.manager-amount{grid-template-columns:1fr;gap:13px}.manager-amount input{max-width:none}.balance-card{padding:13px}.balance-card strong{font-size:25px}.manager-panel .manage-submit{width:100%}.entry{padding:16px}}
 @media(max-width:380px){.action-choices{grid-template-columns:1fr}.action-choice{flex-direction:row;align-items:center;gap:10px;padding:11px!important}.action-choice small{flex:1}.quick-nav a>span:last-child{display:none}.admin-mark{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+/* Cabeçalho: convite à esquerda, título centralizado e sair à direita */
+.admin-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+.admin-head .back-link{justify-self:start;min-width:0}
+.admin-head .admin-mark{justify-self:center;text-align:center;font-size:18px;color:#70553e}
+.back-short{display:none}
+.header-logout{justify-self:end;border:1px solid #d9c4a8;border-radius:10px;padding:8px 13px;min-height:36px;white-space:nowrap}
+.header-logout:hover{background:#eee1d0}
+@media(max-width:620px){
+  .admin-head .admin-mark{font-size:15px}
+  .back-long{display:none}.back-short{display:inline}
+  .header-logout{font-size:12px;min-height:34px;padding:6px 10px}
+}
+/* Exclusão permanente restrita aos administradores, distinta dos ajustes de cotas */
+.entry-remove{display:flex;justify-content:flex-end;margin-top:13px;padding-top:10px;border-top:1px solid #efe2d3}
+.entry-remove-btn{border:0;background:transparent;color:#995a50;padding:5px 2px;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.entry-remove-btn:hover{color:#71382f}
+.entry-remove-btn:focus-visible{outline:2px solid #b4865e;outline-offset:3px;border-radius:3px}
