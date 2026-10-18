@@ -1,18 +1,13 @@
 # Chá do Oli 🧸
 
-Convite digital interativo para o chá de bebê do Oli.
-
-**Evento:** 14 de novembro de 2026, das 15h às 20h, na Rua Fontoura Xavier, 550, Porto Alegre/RS.
+Chá de nenê digital e interativo do Oli.
 
 ## Abrir convite
-
-Quando o GitHub Pages estiver ativado, o endereço será:
-
 **https://luornel.github.io/cha-do-oli/**
 
 ## Funcionalidades
 
-- Convite responsivo para celular e computador.
+- Chá de bebê responsivo para celular e computador.
 - Integração com Google Maps.
 - Eventos de agenda para Google, Outlook e arquivo `.ics` para Apple.
 - 22 sugestões de presentes com cotas e contribuição integral.
@@ -36,7 +31,3 @@ Quando o GitHub Pages estiver ativado, o endereço será:
 O GitHub Pages publica o conteúdo da branch `main`, pasta `/ (root)`. Não exige servidor, banco de dados ou instalação de pacotes.
 
 **Observações:** o site não reserva cotas nem confirma pagamentos. Confirme nome e valor do recebedor no aplicativo bancário antes de pagar. O Calendário Apple pode exigir importação manual do arquivo `.ics`. A chave Pix é exibida publicamente aos convidados.
-
-## Créditos
-
-Layout e organização do protótipo realizados com apoio do ChatGPT. QR Code produzido localmente por biblioteca JavaScript incluída no projeto (Kazuhiko Arase, licença MIT).
