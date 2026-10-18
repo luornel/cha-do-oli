@@ -301,3 +301,8 @@ html{scroll-padding-top:20px}
 .offline-quota-range>summary{display:block;cursor:pointer;padding:11px;font-size:13px;color:#74573f;font-weight:750;touch-action:manipulation}
 .offline-quota-range>summary span{display:block;font-size:11px;font-weight:500;opacity:.87;margin-top:2px}
 @media(max-width:650px){.offline-quota-picker-inner{padding:9px}.offline-quota-option>summary{padding:13px 9px}}
+/* Instruções para assinatura de calendário Apple */
+.calendar-help-trigger{display:inline-block;margin-top:11px;font-size:12px;color:#745f49;text-underline-offset:3px}
+.apple-subscription-label{display:block;text-align:left;color:#856e56;font-size:12px;font-weight:750;margin:16px 0 5px}
+.apple-subscription-url{display:block;width:100%;min-width:0;padding:12px 11px;background:#fffdf9;border:1px solid #ddc6a9;color:#5f513f;border-radius:9px;font-size:13px;text-overflow:clip}
+.apple-help-note a{color:#72563d;font-weight:700}
