@@ -327,3 +327,9 @@ html{scroll-padding-top:20px}
 .contribution-confirmation{padding:14px;border-radius:12px;background:#edf4e8;color:#445c3b;font-size:13px;line-height:1.6}
 .contribution-confirmation p{margin:5px 0}
 #contribution-status{font-size:12px;color:#735b40;line-height:1.6;text-align:center}
+
+/* Link administrativo no rodapé */
+.footer{flex-direction:column;justify-content:center;gap:10px}
+.footer-admin-link{display:inline-block;color:#89735d;font-size:12px;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#b9a18a;transition:color .2s}
+.footer-admin-link:hover,.footer-admin-link:focus-visible{color:#5d4734;text-decoration-color:currentColor}
+.footer-admin-link:focus-visible{outline:2px solid #5d4734;outline-offset:4px;border-radius:2px}
