@@ -105,21 +105,20 @@
 <div class="pay-actions"><button class="primary-btn" id="copy-brcode" type="button">Copiar chave com o valor</button><button class="secondary-btn" id="copy-pix" type="button">Copiar apenas chave</button></div>
 <div class="contribution-flow" id="contribution-flow" hidden>
   <div class="contribution-divider"></div>
-  <p class="contribution-title">Já realizou o Pix?</p>
-  <p class="contribution-explain">Registre sua contribuição para que possamos conferir o pagamento no Nubank. O envio não confirma nem reserva cotas.</p>
+  <p class="contribution-title">Após a sua contribuição, clique no botão abaixo!</p>
+  <p class="contribution-explain">Se identifique e clique no botão abaixo para que possamos identificar você e qual item você escolheu!</p>
   <div id="contribution-selection" class="contribution-selection"></div>
-  <button class="secondary-btn contribution-register" type="button" id="contribution-show-form">Já paguei — registrar contribuição</button>
+  <button class="secondary-btn contribution-register" type="button" id="contribution-show-form">Confirmar contribuição</button>
   <form id="contribution-form" hidden>
-    <label>Nome de quem fez o Pix <input name="payer_name" type="text" required minlength="2" maxlength="90" autocomplete="name" placeholder="Nome para conferir no Nubank"></label>
+    <label>Seu nome <input name="payer_name" type="text" required minlength="2" maxlength="90" autocomplete="name" placeholder="Nome"></label>
     <label>Contato (opcional) <input name="payer_contact" type="text" maxlength="100" autocomplete="tel" placeholder="WhatsApp ou e-mail"></label>
-    <button type="submit" class="primary-btn">Enviar para conferência</button>
+    <button type="submit" class="primary-btn">Enviar</button>
   </form>
   <div id="contribution-confirmation" class="contribution-confirmation" hidden><strong>Recebemos sua solicitação!</strong><p>Referência: <span id="contribution-receipt"></span></p><p>As cotas só serão marcadas como pagas após a conferência do Pix.</p></div>
   <p id="contribution-status" role="status" aria-live="polite"></p>
 </div>
 <div class="copy-fallback" hidden="" id="copy-fallback"><label class="pix-label" for="pix-fallback">Seu aplicativo bloqueou a cópia automática — copie o código abaixo</label><textarea id="pix-fallback" readonly="" rows="3"></textarea></div>
 <p aria-live="polite" class="status" id="copy-status"></p>
-<p class="tiny-warning">Sem reserva automática de cotas ou confirmação de pagamento.</p>
 </section>
 </div>
 <div aria-hidden="true" class="editor-overlay" id="editor-overlay">
@@ -156,5 +155,5 @@
 <script defer src="assets/supabase-config.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script defer src="assets/supabase-service.js"></script>
-<script defer src="assets/contributions.js?v=admin-ux-20261018"></script>
+<script defer src="assets/contributions.js?v=copy-20261018"></script>
 </body></html>

@@ -43,8 +43,7 @@
       }else{
         const track=document.createElement('div');track.className='gift-progress-track';track.setAttribute('role','progressbar');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(total));track.setAttribute('aria-valuenow',String(confirmed));
         const fill=document.createElement('span');fill.style.width=`${total?Math.min(100,Math.round(100*confirmed/total)):0}%`;track.append(fill);
-        const remain=document.createElement('small');remain.textContent=remaining===0?'Presente completo':`${remaining} cotas ainda não confirmadas`;
-        el.append(label,track,remain);
+        el.append(label,track);
         const soldOut=remaining===0;
         trigger.textContent=soldOut?'Presente completo':Number(trigger.dataset.gift)<=7?'Presentear →':'Ver formas de presentear →';
         trigger.setAttribute('aria-disabled',String(soldOut));trigger.classList.toggle('gift-closed',soldOut);
