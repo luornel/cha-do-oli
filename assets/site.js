@@ -47,7 +47,7 @@
   $('#event-place').textContent=data.place||'Local a definir';
   const mapsLink=$('#maps-link'); if(mapsLink){mapsLink.href=data.mapsLink||'https://maps.app.goo.gl/vyRMy49puk8KgtbaA';mapsLink.target='_blank';mapsLink.rel='noopener';}
   const calendarLink=$('#calendar-link'); if(calendarLink){calendarLink.href=data.calendarWebUrl||'https://calendar.google.com/calendar/render?action=TEMPLATE&text=Ch%C3%A1+do+Oli&dates=20261114T180000Z%2F20261114T230000Z&details=O+ch%C3%A1+do+Oli+est%C3%A1+chegando%21+Venha+escrever+esse+cap%C3%ADtulo+com+a+gente.&location=Fontoura+Xavier%2C+550%2C+Porto+Alegre%2C+RS&ctz=America%2FSao_Paulo';calendarLink.title='Adicionar à agenda';calendarLink.setAttribute('aria-label',`Adicionar ${data.date||'o evento'} à agenda`);}
-  document.title=(data.title||'Chá do Oli')+' • Convite';
+  document.title='Chá do Oli!';
   const editTrigger=$('#edit-trigger');if(editTrigger)editTrigger.hidden=!!data.guestMode;
   renderGifts();
  }
