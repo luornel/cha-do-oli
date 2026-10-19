@@ -61,13 +61,36 @@
  }
 
  function setOverlay(id,open){const el=$('#'+id);el.classList.toggle('open',open);el.setAttribute('aria-hidden',String(!open));document.body.classList.toggle('no-scroll',!!$('.overlay.open,.editor-overlay.open'));if(!open&&previousFocus&&document.contains(previousFocus))previousFocus.focus();}
- function tlv(id,value){const str=String(value);if(str.length>99)throw Error('Campo Pix muito longo');return id+String(str.length).padStart(2,'0')+str;}
+ function byteLength(value){return new TextEncoder().encode(String(value)).length;}
+ function fitUtf8(value,maxBytes){
+  let result='',length=0;
+  for(const char of String(value)){
+   const part=byteLength(char);
+   if(length+part>maxBytes)break;
+   result+=char;length+=part;
+  }
+  return result;
+ }
+ // O padrão BR Code informa o tamanho dos campos em BYTES UTF-8, não em caracteres.
+ function tlv(id,value){
+  const str=String(value),len=byteLength(str);
+  if(len>99)throw Error('Campo Pix muito longo');
+  return id+String(len).padStart(2,'0')+str;
+ }
+ function pixDescription(g){
+  const prefix=String(data.pixDescription||'Chá do Oli!').trim()+' - ';
+  const label=String((g&&g.pixLabel)||g?.name||'Presente').trim();
+  const header=tlv('00','BR.GOV.BCB.PIX')+tlv('01',data.pixKey);
+  const maximum=Math.min(60,99-byteLength(header)-4);
+  if(maximum<byteLength(prefix)+1)throw Error('Chave Pix excede o limite da descrição.');
+  return fitUtf8(prefix+label,maximum);
+ }
  function crc16(bytes){let crc=0xffff;for(const b of bytes){crc^=b<<8;for(let i=0;i<8;i++){crc=(crc&0x8000)?((crc<<1)^0x1021)&0xffff:(crc<<1)&0xffff;}}return crc.toString(16).toUpperCase().padStart(4,'0');}
  // Mantém os dados fornecidos pelo Nubank e injeta 54 (valor) + recalcula 63 (CRC16-CCITT).
  function buildPix(amount){
   if(!data.pixKey)throw Error('Chave Pix não configurada');
-  const description=(data.pixDescription||'').slice(0,60),name=(data.pixName||'RECEBEDOR').slice(0,25);
-  const info=tlv('00','BR.GOV.BCB.PIX')+tlv('01',data.pixKey)+ (description?tlv('02',description):'');
+  const description=pixDescription(gift),name=fitUtf8(data.pixName||'RECEBEDOR',25);
+  const info=tlv('00','BR.GOV.BCB.PIX')+tlv('01',data.pixKey)+tlv('02',description);
   const content=[tlv('00','01'),tlv('26',info),tlv('52','0000'),tlv('53','986'),tlv('54',Number(amount).toFixed(2)),tlv('58','BR'),tlv('59',name),tlv('60',data.pixCity||'SAO PAULO'),tlv('62',tlv('05',data.pixTxid||'***'))].join('')+'6304';
   return content+crc16(new TextEncoder().encode(content));
  }
@@ -96,6 +119,7 @@
   $('#detail-selection').textContent=free?`${quantity} ${quantity===1?'cota livre':'cotas livres'} de ${money(gift.price)}`:isFull?'Valor integral':`${quantity} ${quantity===1?'cota':'cotas'} de ${count}`;
   const amount=free?quantity*Number(gift.price):(isFull?cents(gift.price):quantity*quotaCents(gift))/100;
   $('#detail-price').textContent=money(amount);
+  $('#detail-pix-description').textContent=pixDescription(gift);
   window.dispatchEvent(new CustomEvent('oli:selection-changed'));
   $('#copy-fallback').hidden=true;
   try{pixPayload=buildPix(amount);drawQR(pixPayload);$('#copy-brcode').disabled=false;$('#copy-status').textContent='';}
@@ -190,6 +214,15 @@
   const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='cha-do-oli-convite.html';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   toast('Arquivo dos convidados gerado! Confira e envie como documento.');
  });
- window.OliInvite={getSelection:()=>gift ? {giftId:Number(gift.id),giftName:gift.name,units:unlimitedGift(gift)?quantity:(mode==='full'||Number(gift.price)<500?giftQuotas(gift):quantity),amountCents:Math.round(pixAmount()*100)} : null};
+ window.OliInvite={
+  getSelection:()=>gift ? {giftId:Number(gift.id),giftName:gift.name,units:unlimitedGift(gift)?quantity:(mode==='full'||Number(gift.price)<500?giftQuotas(gift):quantity),amountCents:Math.round(pixAmount()*100)} : null,
+  setPixLabels:rows=>{
+    for(const g of data.gifts){
+      const row=(rows||[]).find(x=>Number(x.gift_id)===Number(g.id));
+      if(row)g.pixLabel=row.pix_label||null;
+    }
+    if(gift)syncPay();
+  }
+ };
  render();
 })();

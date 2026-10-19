@@ -79,8 +79,9 @@
   }
   async function refresh(){
     try{
-      const rows=await api.rpc('oli_progress');
+      const [rows,pixLabels]=await Promise.all([api.rpc('oli_progress'),api.rpc('oli_pix_labels')]);
       state.progress=new Map((rows||[]).map(r=>[Number(r.gift_id),r]));
+      window.OliInvite?.setPixLabels(pixLabels||[]);
       progressRows();
       progressBox.textContent='';progressBox.hidden=true;
     }catch(e){progressBox.hidden=false;progressBox.textContent='O acompanhamento está temporariamente indisponível. O Pix continua funcionando.';}

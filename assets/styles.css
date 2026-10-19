@@ -359,3 +359,8 @@ html{scroll-padding-top:20px}
 .contribution-flow.is-confirmed .contribution-confirmation strong{display:block;font-size:17px;color:#3e683e;margin-bottom:12px}
 .contribution-flow.is-confirmed .contribution-confirmation p{font-size:13px;line-height:1.6}
 .contribution-flow.is-confirmed .contribution-confirmation #contribution-receipt{font-weight:700;letter-spacing:.04em}
+
+/* Identificação do Pix por presente */
+.pix-description-hint{font-size:12px;line-height:1.55;margin:12px 0 16px;color:#745d47;text-align:center;overflow-wrap:anywhere}
+.pix-description-hint strong{display:block;font-size:13px;color:#554333;margin-top:4px}
+.pix-description-hint small{display:block;font-size:11px;color:#847360;margin-top:4px}
