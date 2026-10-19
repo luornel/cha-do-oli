@@ -18,8 +18,28 @@
   const confirmation=$('contribution-confirmation');
   const submit=form.querySelector('button[type=submit]');
   let current=null;
+  function showThankYou(receiptId){
+    // Mensagem sempre reconstruída com a versão atual, mesmo se o HTML estiver em cache.
+    const code=String(receiptId||'').split('-')[0].toUpperCase();
+    const heading=document.createElement('strong');
+    heading.textContent='Recebemos sua contribuição!';
+    const reference=document.createElement('p');
+    reference.textContent='Código da contribuição: ';
+    const value=document.createElement('span');
+    value.id='contribution-receipt';
+    value.textContent=code||'—';
+    reference.append(value);
+    const thanks=document.createElement('p');
+    thanks.textContent='Obrigado por contribuir com o nosso chá!';
+    confirmation.replaceChildren(heading,reference,thanks);
+    flow.classList.add('is-confirmed');
+    form.hidden=true;
+    openButton.hidden=true;
+    confirmation.hidden=false;
+    status.textContent='';
+  }
   function selection(){return window.OliInvite && window.OliInvite.getSelection();}
-  function reset(){form.hidden=true;confirmation.hidden=true;status.textContent='';submit.disabled=false;current=selection();paintSelection();}
+  function reset(){flow.classList.remove('is-confirmed');form.hidden=true;confirmation.hidden=true;status.textContent='';submit.disabled=false;current=selection();paintSelection();}
   function paintSelection(){
     current=selection();
     if (!current) return;
@@ -94,9 +114,7 @@
         p_gift_id:current.giftId,p_units:current.units,p_payer_name:name,
         p_payer_contact:contact || null,p_request_nonce:crypto.randomUUID()
       });
-      form.hidden=true;openButton.hidden=true;confirmation.hidden=false;
-      $('contribution-receipt').textContent=String((Array.isArray(r)?r[0]:r)?.id||'').split('-')[0].toUpperCase();
-      status.textContent='';
+      showThankYou((Array.isArray(r)?r[0]:r)?.id);
       await refresh();
     }catch(e){status.textContent=e.message||'Não foi possível registrar. Tente novamente.';submit.disabled=false;}
     finally{state.requesting=false;}

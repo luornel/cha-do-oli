@@ -347,3 +347,15 @@ html{scroll-padding-top:20px}
 
 /* Resumo do presente centralizado na confirmação de contribuição */
 .contribution-selection{text-align:center;}
+
+/* Após o envio, exibe somente o agradecimento e o código, sem cotas ou instruções adicionais. */
+.contribution-flow.is-confirmed .contribution-badge,
+.contribution-flow.is-confirmed .contribution-title,
+.contribution-flow.is-confirmed .contribution-explain,
+.contribution-flow.is-confirmed .contribution-selection,
+.contribution-flow.is-confirmed #contribution-status{display:none!important}
+.contribution-flow.is-confirmed{padding:15px;background:linear-gradient(180deg,#fafff7,#f0f7eb)}
+.contribution-flow.is-confirmed .contribution-confirmation{text-align:center;background:#eaf4e6;padding:24px 14px;border-radius:13px}
+.contribution-flow.is-confirmed .contribution-confirmation strong{display:block;font-size:17px;color:#3e683e;margin-bottom:12px}
+.contribution-flow.is-confirmed .contribution-confirmation p{font-size:13px;line-height:1.6}
+.contribution-flow.is-confirmed .contribution-confirmation #contribution-receipt{font-weight:700;letter-spacing:.04em}
