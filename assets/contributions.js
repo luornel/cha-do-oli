@@ -96,7 +96,7 @@
       });
       form.hidden=true;openButton.hidden=true;confirmation.hidden=false;
       $('contribution-receipt').textContent=String((Array.isArray(r)?r[0]:r)?.id||'').split('-')[0].toUpperCase();
-      status.textContent='Solicitação enviada. Aguarde a conferência do Pix pelo organizador.';
+      status.textContent='';
       await refresh();
     }catch(e){status.textContent=e.message||'Não foi possível registrar. Tente novamente.';submit.disabled=false;}
     finally{state.requesting=false;}
