@@ -61,19 +61,12 @@
  }
 
  function setOverlay(id,open){const el=$('#'+id);el.classList.toggle('open',open);el.setAttribute('aria-hidden',String(!open));document.body.classList.toggle('no-scroll',!!$('.overlay.open,.editor-overlay.open'));if(!open&&previousFocus&&document.contains(previousFocus))previousFocus.focus();}
- function byteLength(value){return new TextEncoder().encode(String(value)).length;}
- function fitUtf8(value,maxBytes){
-  let result='',length=0;
-  for(const char of String(value)){
-   const part=byteLength(char);
-   if(length+part>maxBytes)break;
-   result+=char;length+=part;
-  }
-  return result;
- }
- // O padrão BR Code informa o tamanho dos campos em BYTES UTF-8, não em caracteres.
+ // O Nubank usa o comprimento em caracteres nos subcampos do BR Code;
+ // CRC16 e os módulos do QR continuam calculados com os bytes UTF-8 originais.
+ function fieldLength(value){return Array.from(String(value)).length;}
+ function fitField(value,maxCharacters){return Array.from(String(value)).slice(0,maxCharacters).join('');}
  function tlv(id,value){
-  const str=String(value),len=byteLength(str);
+  const str=String(value),len=fieldLength(str);
   if(len>99)throw Error('Campo Pix muito longo');
   return id+String(len).padStart(2,'0')+str;
  }
@@ -81,15 +74,15 @@
   const prefix=String(data.pixDescription||'Chá do Oli!').trim()+' - ';
   const label=String((g&&g.pixLabel)||g?.name||'Presente').trim();
   const header=tlv('00','BR.GOV.BCB.PIX')+tlv('01',data.pixKey);
-  const maximum=Math.min(60,99-byteLength(header)-4);
-  if(maximum<byteLength(prefix)+1)throw Error('Chave Pix excede o limite da descrição.');
-  return fitUtf8(prefix+label,maximum);
+  const maximum=Math.min(60,99-fieldLength(header)-4);
+  if(maximum<fieldLength(prefix)+1)throw Error('Chave Pix excede o limite da descrição.');
+  return fitField(prefix+label,maximum);
  }
  function crc16(bytes){let crc=0xffff;for(const b of bytes){crc^=b<<8;for(let i=0;i<8;i++){crc=(crc&0x8000)?((crc<<1)^0x1021)&0xffff:(crc<<1)&0xffff;}}return crc.toString(16).toUpperCase().padStart(4,'0');}
  // Mantém os dados fornecidos pelo Nubank e injeta 54 (valor) + recalcula 63 (CRC16-CCITT).
  function buildPix(amount){
   if(!data.pixKey)throw Error('Chave Pix não configurada');
-  const description=pixDescription(gift),name=fitUtf8(data.pixName||'RECEBEDOR',25);
+  const description=pixDescription(gift),name=fitField(data.pixName||'RECEBEDOR',25);
   const info=tlv('00','BR.GOV.BCB.PIX')+tlv('01',data.pixKey)+tlv('02',description);
   const content=[tlv('00','01'),tlv('26',info),tlv('52','0000'),tlv('53','986'),tlv('54',Number(amount).toFixed(2)),tlv('58','BR'),tlv('59',name),tlv('60',data.pixCity||'SAO PAULO'),tlv('62',tlv('05',data.pixTxid||'***'))].join('')+'6304';
   return content+crc16(new TextEncoder().encode(content));
@@ -119,11 +112,17 @@
   $('#detail-selection').textContent=free?`${quantity} ${quantity===1?'cota livre':'cotas livres'} de ${money(gift.price)}`:isFull?'Valor integral':`${quantity} ${quantity===1?'cota':'cotas'} de ${count}`;
   const amount=free?quantity*Number(gift.price):(isFull?cents(gift.price):quantity*quotaCents(gift))/100;
   $('#detail-price').textContent=money(amount);
-  $('#detail-pix-description').textContent=pixDescription(gift);
   window.dispatchEvent(new CustomEvent('oli:selection-changed'));
   $('#copy-fallback').hidden=true;
-  try{pixPayload=buildPix(amount);drawQR(pixPayload);$('#copy-brcode').disabled=false;$('#copy-status').textContent='';}
-  catch(e){pixPayload='';$('#qr-code').textContent='Código indisponível.';$('#copy-brcode').disabled=true;$('#copy-status').textContent='Verifique os dados do Pix.';}
+  try{
+   pixPayload=buildPix(amount);drawQR(pixPayload);
+   $('#detail-pix-description').textContent=pixDescription(gift);
+   $('#copy-brcode').disabled=false;$('#copy-status').textContent='';
+  }catch(e){
+   pixPayload='';$('#qr-code').textContent='Código indisponível.';
+   $('#detail-pix-description').textContent='—';
+   $('#copy-brcode').disabled=true;$('#copy-status').textContent='Verifique os dados do Pix.';
+  }
  }
  function openGift(id){
   gift=data.gifts.find(g=>Number(g.id)===Number(id));if(!gift)return;

@@ -131,7 +131,7 @@
 .dialog .payment-tip{font-size:12px;margin:12px 0}
 .qr-box{border:1px solid #e1d1bd;border-radius:14px;background:white;padding:16px 10px 12px;text-align:center;margin-bottom:14px}
 .qr-box #qr-code{display:flex;justify-content:center}
-.qr-box svg{display:block;width:min(100%,228px);height:auto;image-rendering:pixelated}
+.qr-box svg{display:block;width:min(100%,296px);height:auto;image-rendering:pixelated}
 .qr-box p{font-size:11px;font-weight:700;color:#74614b;letter-spacing:.08em;margin:6px 0 0}
 .code-field{display:block;margin-bottom:9px}
 .code-field textarea{display:block;width:100%;border:1px solid #d2c3ad;border-radius:8px;background:#fffdfa;color:#73624f;resize:none;font:11px/1.45 monospace;overflow-wrap:anywhere;padding:9px;margin-top:5px}
