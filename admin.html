@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#f6efe1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Chá do Oli">
+  <link rel="manifest" href="./manifest.webmanifest?v=admin-pwa-20261019">
   <title>Controle de presentes</title>
-<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=urso-20261019" sizes="any">
-  <link rel="stylesheet" href="assets/admin.css?v=admin-delete-20261018">
+<link rel="icon" type="image/png" sizes="48x48" href="./icons/oli-48.png?v=admin-pwa-20261019">
+  <link rel="stylesheet" href="assets/admin.css?v=admin-pwa-20261019">
 </head>
 <body>
   <header class="admin-head">
@@ -50,6 +54,19 @@
         </div>
         <div class="dash-actions"><button type="button" id="refresh" class="outline">↻ Atualizar</button></div>
       </div>
+      <section class="pwa-tools" aria-label="Aplicativo no Android">
+        <div class="pwa-tools-heading">
+          <div class="pwa-tools-icon" aria-hidden="true">🐻</div>
+          <div><strong>Chá do Oli no seu celular</strong><p>Instale o painel como aplicativo e acompanhe novas contribuições.</p></div>
+        </div>
+        <div class="pwa-tools-actions">
+          <button type="button" class="outline" id="pwa-install" hidden>Instalar aplicativo</button>
+          <button type="button" class="outline" id="pwa-notify">Ativar notificações</button>
+          <button type="button" class="ghost" id="pwa-notification-test" hidden>Testar aviso</button>
+        </div>
+        <p id="pwa-install-help" class="pwa-tool-note"></p>
+        <p id="pwa-notification-status" class="pwa-tool-note" role="status" aria-live="polite"></p>
+      </section>
       <div class="metrics" aria-label="Resumo das contribuições">
         <div class="metric metric-primary"><span>Valor contabilizado</span><strong id="paid-amount">R$ 0,00</strong><small>Pix confirmados + ajustes manuais</small></div>
         <div class="metric"><span>Cotas contabilizadas</span><strong id="paid-units">0</strong><small>Em todos os presentes</small></div>
@@ -121,6 +138,7 @@
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=saldo-zero-20261018"></script>
+  <script defer src="assets/admin.js?v=pwa-20261019"></script>
+  <script defer src="assets/pwa-admin.js?v=pwa-20261019"></script>
 </body>
 </html>

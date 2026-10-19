@@ -65,6 +65,9 @@
       ]);
       entries=entries||[];balances=balances||[];history=history||[];
       render();renderManager();message('dashboard-message','');
+      window.dispatchEvent(new CustomEvent('oli:admin-loaded',{detail:{
+        entries:entries.map(e=>({id:e.id,status:e.status,gift_name:e.gift_name,amount_cents:e.amount_cents}))
+      }}));
     }catch(e){message('dashboard-message','Falha ao carregar: '+e.message);throw e;}
   }
 
@@ -207,6 +210,7 @@
     try{
       await load();
       show('logout',true);
+      window.dispatchEvent(new Event('oli:admin-ready'));
       message('login-error','');
     }catch(e){
       const reason=String(e?.message||'Erro temporário ao carregar os dados.');
@@ -216,6 +220,7 @@
         message('login-error','Sua conta está autenticada, mas ainda não possui permissão administrativa.');
       }else{
         show('logout',true);
+        window.dispatchEvent(new Event('oli:admin-ready'));
         message('dashboard-message','Falha ao carregar os dados: '+reason+' Use Atualizar para tentar novamente.');
       }
     }
@@ -238,7 +243,7 @@
     finally{btn.disabled=false;}
   });
   $('refresh').addEventListener('click',()=>load().catch(()=>{}));
-  $('logout').addEventListener('click',async()=>{await api.getClient().auth.signOut();entries=[];show('dashboard',false);show('logout',false);show('login-panel',true);message('login-error','Sessão encerrada.');});
+  $('logout').addEventListener('click',async()=>{await api.getClient().auth.signOut();entries=[];show('dashboard',false);show('logout',false);show('login-panel',true);message('login-error','Sessão encerrada.');window.dispatchEvent(new Event('oli:admin-logout'));});
   document.querySelectorAll('.filters button').forEach(button=>button.addEventListener('click',()=>{
     filter=button.dataset.filter;
     document.querySelectorAll('.filters button').forEach(b=>{const yes=b===button;b.classList.toggle('active',yes);b.setAttribute('aria-pressed',String(yes));});
