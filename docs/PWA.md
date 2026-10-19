@@ -26,3 +26,6 @@ Com o painel aberto e autenticado, toque em **Ativar notificações**, autorize 
 - Instalar o PWA não concede direitos administrativos; é preciso login autorizado.
 
 As cores e a ilustração foram adaptadas da identidade visual atual do Chá do Oli.
+## Ícone pequeno das notificações (Android)
+
+Na barra de status e nas notificações recolhidas, o Android utiliza a propriedade `badge` da API de notificações, que precisa ser uma silhueta monocromática com transparência. Foi incluído `icons/oli-badge-96.png` (96 × 96, PNG com fundo transparente) para essa posição. O ícone colorido `oli-192.png` permanece como ícone principal da notificação e do aplicativo. Para testar a mudança, descarte a notificação antiga, recarregue o painel e use **Testar aviso** novamente. Não é necessário reinstalar o PWA.

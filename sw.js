@@ -1,7 +1,7 @@
 /* Chá do Oli PWA (admin) — somente recursos públicos estáticos são armazenados.
    HTML, tokens de login, solicitações e dados do Supabase nunca são armazenados aqui. */
-const CACHE = 'oli-pwa-icons-v1';
-const ICONS = ['./icons/oli-48.png','./icons/oli-192.png','./icons/oli-512.png','./icons/oli-maskable-512.png'];
+const CACHE = 'oli-pwa-icons-v2';
+const ICONS = ['./icons/oli-48.png','./icons/oli-192.png','./icons/oli-512.png','./icons/oli-maskable-512.png','./icons/oli-badge-96.png'];
 const ICON_URLS = ICONS.map(path => new URL(path, self.registration.scope).href);
 
 self.addEventListener('install', event => {

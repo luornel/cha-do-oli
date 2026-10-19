@@ -49,7 +49,7 @@
 
   async function showNotification(title,body,tag){
     if(!readyToNotify())return;
-    const options={body,tag,icon:'./icons/oli-192.png',badge:'./icons/oli-48.png',data:{url:APP_URL}};
+    const options={body,tag,icon:'./icons/oli-192.png',badge:'./icons/oli-badge-96.png',data:{url:APP_URL}};
     try{
       const sw=registrationPromise&&await registrationPromise;
       if(sw&&typeof sw.showNotification==='function'){
