@@ -385,3 +385,12 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
 }
 @media(min-width:761px){.mobile-menu,.mobile-menu-toggle{display:none!important}}
 @media(prefers-reduced-motion:reduce){.hamburger-lines span{transition:none}}
+
+/* Saudação e indicador de pendências alinhados no desktop e no celular. */
+#overview-title{display:flex;align-items:center;gap:.25em;white-space:nowrap}
+#overview-title .hello-accent{flex:none;margin:0;line-height:1}
+.filters .filter-count:not(:empty){
+ top:-10px;right:auto;left:50%;transform:translateX(-50%);
+ min-width:21px;height:21px;padding:0 5px;line-height:1;
+ font-variant-numeric:tabular-nums;display:grid;place-items:center
+}
