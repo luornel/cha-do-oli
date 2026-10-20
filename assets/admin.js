@@ -126,18 +126,17 @@
       submit.disabled=true;return;
     }
     const paid=Number(g.confirmed_quotas),unit=money(g.unit_price_cents);
-    const total=g.is_unlimited?'Contribuição livre · disponibilidade ilimitada':`${Math.max(0,Number(g.total_quotas)-paid)} cotas ainda disponíveis de ${g.total_quotas}`;
+    const total=g.is_unlimited?'Contribuição livre · disponibilidade ilimitada':`Meta de referência: ${g.total_quotas} cotas · contribuições abertas`;
     $('manage-balance-count').textContent=`${paid} ${paid===1?'cota':'cotas'}`;
     $('manage-balance').textContent=`${unit} por cota · ${total}`;
     const units=mode==='reset'?0:Number(input.value);
     const after=mode==='reset'?0:mode==='add'?paid+units:paid-units;
     const valid=mode==='reset'?paid>0:
-      Number.isInteger(units)&&units>=1&&units<=10000&&after>=0&&
-      (g.is_unlimited||after<=Number(g.total_quotas));
+      Number.isInteger(units)&&units>=1&&units<=10000&&after>=0;
     const preview=$('manage-preview'),caption=$('manage-preview-caption');
     preview.textContent=valid?`${after} ${after===1?'cota':'cotas'}`:'Quantidade inválida';
     caption.textContent=mode==='reset'?'O saldo contabilizado ficará zerado.':
-      mode==='remove'?'Cotas descontadas do saldo público.':'Cotas acrescentadas ao saldo público.';
+      mode==='remove'?'Cotas descontadas do total contabilizado.':'Cotas acrescentadas ao total contabilizado.';
     preview.parentElement.classList.toggle('invalid',!valid);
     submit.disabled=!valid||busy;
   }
@@ -179,8 +178,8 @@
     const count=action==='reset'?null:Number(form.elements.units.value);
     const before=Number(selected.confirmed_quotas);
     const after=action==='reset'?0:action==='add'?before+count:before-count;
-    if(!Number.isInteger(after)||after<0||(!selected.is_unlimited&&after>Number(selected.total_quotas))){
-      message('manage-message','Quantidade inválida ou superior ao disponível neste presente.');return;
+    if(!Number.isInteger(after)||after<0){
+      message('manage-message','Quantidade inválida para este ajuste.');return;
     }
     if(action==='reset'){
       if(before<=0){dismissResetConfirmation();paintManager();return;}
