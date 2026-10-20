@@ -3,7 +3,11 @@ const CACHE='oli-pwa-icons-v4-urso-20261020';
 const ICONS=['./icons/oli-48.png','./icons/oli-192.png','./icons/oli-512.png','./icons/oli-maskable-512.png','./icons/oli-badge-96.png'];
 const URLS=ICONS.map(path=>new URL(path,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil(
-  caches.open(CACHE).then(cache=>cache.addAll(URLS)).then(()=>self.skipWaiting())
+  caches.open(CACHE).then(cache=>Promise.all(URLS.map(async url=>{
+    const response=await fetch(url,{cache:'reload'});
+    if(!response.ok)throw new Error('Ícone indisponível: '+url);
+    await cache.put(url,response);
+  }))).then(()=>self.skipWaiting())
 ));
 self.addEventListener('activate',event=>event.waitUntil(Promise.all([
   caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('oli-pwa-')&&key!==CACHE).map(key=>caches.delete(key)))),
