@@ -51,8 +51,10 @@
     const notice=$('gift-completion-note');
     if(!notice)return;
     const selected=selection();
+    const item=selected&&JSON.parse(document.getElementById('app-data').textContent)
+      .gifts.find(g=>Number(g.id)===Number(selected.giftId));
     const row=selected&&state.progress.get(Number(selected.giftId));
-    const completed=!!(row&&Number(row.total_quotas)>0&&
+    const completed=!!(item&&!item.unlimited&&row&&Number(row.total_quotas)>0&&
       Number(row.confirmed_quotas)>=Number(row.total_quotas));
     notice.hidden=!completed;
   }
