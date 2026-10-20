@@ -311,3 +311,77 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
  .reset-confirm-actions{display:grid;grid-template-columns:1fr 1fr}
  .reset-confirm-actions button{min-width:0;padding:10px 6px}
 }
+
+
+/* Menu compacto do painel: somente no mobile/PWA. */
+.mobile-menu-toggle{display:none}
+.mobile-menu[hidden]{display:none!important}
+
+@media(max-width:760px){
+  html{scroll-padding-top:94px}
+  .admin-head-inner{
+    position:relative;display:flex;align-items:center;justify-content:space-between;
+    min-height:74px;padding:10px 16px;gap:8px
+  }
+  .admin-brand{flex:1;min-width:0;gap:0;justify-content:flex-start}
+  .admin-brand .brand-icon{width:45px;height:45px;flex:none}
+  .admin-brand .brand-icon img{width:38px;height:38px}
+  .admin-brand .brand-copy{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:max-content;max-width:calc(100% - 132px);text-align:center;pointer-events:none
+  }
+  .admin-brand .brand-copy strong{font-size:clamp(20px,5.6vw,26px);white-space:nowrap}
+  .admin-brand .brand-copy small{display:none}
+  .header-actions{display:none!important}
+  body:has(#dashboard:not([hidden])) .mobile-menu-toggle{
+    display:inline-flex;align-items:center;justify-content:center;flex:none;
+    width:45px;height:45px;margin-left:auto;position:relative;z-index:1;
+    background:#f4e9db;color:#664d37;border:1px solid #ddcbb4;
+    border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent
+  }
+  .mobile-menu-toggle[aria-expanded="true"]{background:#e9d9c5;border-color:#c8b092}
+  .hamburger-lines{width:21px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
+  .hamburger-lines span{display:block;width:100%;height:2px;border-radius:4px;background:currentColor;transition:transform .2s,opacity .2s}
+  .mobile-menu-toggle[aria-expanded="true"] .hamburger-lines span:first-child{transform:translateY(8px) rotate(45deg)}
+  .mobile-menu-toggle[aria-expanded="true"] .hamburger-lines span:nth-child(2){opacity:0}
+  .mobile-menu-toggle[aria-expanded="true"] .hamburger-lines span:last-child{transform:translateY(-8px) rotate(-45deg)}
+  .mobile-menu{
+    position:absolute;top:calc(100% + 8px);left:12px;right:12px;z-index:90;
+    padding:9px;background:#fffbf4;border:1px solid #decbb3;border-radius:17px;
+    box-shadow:0 18px 48px #41302036;max-height:calc(100dvh - 96px);overflow-y:auto;
+    overscroll-behavior:contain
+  }
+  .mobile-menu-item{
+    width:100%;display:flex;align-items:center;gap:12px;min-height:49px;
+    padding:9px 12px;border:1px solid transparent;border-radius:11px;
+    background:transparent;color:#604b36;text-decoration:none;
+    font-size:14px;font-weight:720;text-align:left;cursor:pointer
+  }
+  .mobile-menu-item:hover,.mobile-menu-item:focus-visible{background:#f3eadb}
+  .mobile-menu-item.is-current{background:#f0e2ce;color:#503922}
+  .mobile-menu-symbol{
+    display:grid;place-items:center;width:32px;height:32px;flex:none;
+    border-radius:9px;background:#f1e6d7;color:#7b6043;font-size:19px;
+    font-family:Georgia,serif
+  }
+  .mobile-menu-item.is-current .mobile-menu-symbol{background:#e2cdb0;color:#503922}
+  .mobile-menu-item-label{flex:1}
+  .mobile-menu-divider{height:1px;background:#ebddca;margin:7px 12px}
+  .mobile-menu-logout{color:#895444}
+  .mobile-menu-logout .mobile-menu-symbol{background:#f7e8e2;color:#895444}
+  .mobile-menu-badge{
+    min-width:22px;height:22px;padding:2px 6px;border-radius:99px;
+    display:grid;place-items:center;font-size:11px;font-weight:850;
+    color:#fff;background:#975840
+  }
+  .workspace-nav{display:none!important}
+  .overview{margin-top:8px}
+  .content-section{scroll-margin-top:95px}
+}
+@media(max-width:375px){
+  .admin-head-inner{padding-inline:13px}
+  .admin-brand .brand-copy strong{font-size:21px}
+  .admin-brand .brand-icon,body:has(#dashboard:not([hidden])) .mobile-menu-toggle{width:42px;height:42px}
+}
+@media(min-width:761px){.mobile-menu,.mobile-menu-toggle{display:none!important}}
+@media(prefers-reduced-motion:reduce){.hamburger-lines span{transition:none}}
