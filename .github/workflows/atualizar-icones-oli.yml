@@ -1,10 +1,9 @@
 name: Atualizar ícones do Ursinho
 on:
+  workflow_dispatch:
   push:
     paths:
-      - 'icons/oli-urso-novo.svg'
       - '.github/workflows/atualizar-icones-oli.yml'
-  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -17,32 +16,52 @@ jobs:
           python-version: '3.12'
       - name: Instalar Pillow
         run: python -m pip install pillow
-      - name: Gerar versões PNG do ícone
+      - name: Restaurar PNG original em alta e regenerar todos os ícones
         run: |
           python - <<'PY'
-          import base64, io, pathlib, re
-          from PIL import Image
-          source=pathlib.Path('icons/oli-urso-novo.svg').read_text()
-          encoded=re.search(r'data:image/png;base64,([A-Za-z0-9+/=]+)', source).group(1)
-          original=Image.open(io.BytesIO(base64.b64decode(encoded))).convert('RGBA')
+          import base64,io,pathlib,re,zipfile
+          from PIL import Image,ImageOps
+          archive='Site_GitHub_Pages_Cha_do_Oli.zip'
+          with zipfile.ZipFile(archive) as z:
+            html=z.read('index.html').decode('utf-8')
+          source=re.search(r'data:image/png;base64,([A-Za-z0-9+/=]+)',html)
+          if not source:raise RuntimeError('Arte PNG original não encontrada no backup')
+          data=base64.b64decode(source.group(1))
+          original=Image.open(io.BytesIO(data)).convert('RGBA')
+          if original.width<1000 or original.height<1000:
+            raise RuntimeError('Arquivo encontrado não tem alta resolução')
+          # Validado contra o anexo fornecido: mesma ilustração, dimensão nativa ~1235x1274.
           root=pathlib.Path('icons')
-          for size in (48, 192, 512):
-              original.resize((size,size),Image.Resampling.LANCZOS).save(root/f'oli-{size}.png',optimize=True)
-          bg=Image.new('RGBA',(512,512),(247,238,224,255))
-          bear=original.resize((350,350),Image.Resampling.LANCZOS)
-          bg.alpha_composite(bear,(81,81))
-          bg.save(root/'oli-maskable-512.png',optimize=True)
-          alpha=original.resize((96,96),Image.Resampling.LANCZOS).getchannel('A')
+          root.mkdir(exist_ok=True)
+          pathlib.Path('assets/urso-oli-home.png').write_bytes(data)
+          print('HOME_HQ',original.size,len(data))
+          def create_icon(size,pad=0):
+            canvas=Image.new('RGBA',(size,size),(0,0,0,0))
+            bear=ImageOps.contain(original,(size-pad*2,size-pad*2),Image.Resampling.LANCZOS)
+            canvas.alpha_composite(bear,((size-bear.width)//2,(size-bear.height)//2))
+            return canvas
+          for size in (48,192,512):
+            create_icon(size).save(root/f'oli-{size}.png',optimize=True)
+          maskable=Image.new('RGBA',(512,512),(247,238,224,255))
+          bear=ImageOps.contain(original,(350,350),Image.Resampling.LANCZOS)
+          maskable.alpha_composite(bear,((512-bear.width)//2,(512-bear.height)//2))
+          maskable.save(root/'oli-maskable-512.png',optimize=True)
+          silhouette=create_icon(96)
           badge=Image.new('RGBA',(96,96),'white')
-          badge.putalpha(alpha)
+          badge.putalpha(silhouette.getchannel('A'))
           badge.save(root/'oli-badge-96.png',optimize=True)
+          favicon=base64.b64encode((root/'oli-48.png').read_bytes()).decode('ascii')
+          pathlib.Path('favicon.svg').write_text(
+             '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">'
+             '<image x="0" y="0" width="64" height="64" href="data:image/png;base64,'+favicon+'"/></svg>'
+          )
           PY
-      - name: Publicar ícones atualizados
+      - name: Publicar arte e ícones PNG sem alterar pagamentos
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add icons/oli-48.png icons/oli-192.png icons/oli-512.png icons/oli-maskable-512.png icons/oli-badge-96.png
+          git add assets/urso-oli-home.png icons/oli-48.png icons/oli-192.png icons/oli-512.png icons/oli-maskable-512.png icons/oli-badge-96.png favicon.svg
           if ! git diff --cached --quiet; then
-            git commit -m 'Atualizar ícones PNG do ursinho do Oli'
+            git commit -m 'Restaurar ursinho em alta resolução e atualizar todos os ícones'
             git push
           fi
