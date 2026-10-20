@@ -1,11 +1,11 @@
-/* Convidados: Pix e solicitações; o progresso fica apenas no painel administrativo. */
+/* Convidados: progresso dos presentes, Pix e confirmação; metas não impedem novas contribuições. */
 (function () {
   'use strict';
   const api=window.OliBackend;
   if (!api || !api.configured) return;  // convite atual continua funcionando sem banco
   const $=(id)=>document.getElementById(id);
   const moneyCents=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(n)||0)/100);
-  const state={requesting:false};
+  const state={progress:new Map(),requesting:false};
   const flow=$('contribution-flow');
   if (!flow) return;
   flow.hidden=false;
@@ -47,25 +47,67 @@
     const label=product&&!product.unlimited&&Number(product.price)<500?'Valor integral':`${current.units} ${current.units===1?'cota':'cotas'}`;
     info.textContent=`${current.giftName} · ${label} · ${moneyCents(current.amountCents)}`;
   }
-  function ensureAllGiftsAvailable(){
-    // O progresso e a meta de cada presente são privados ao painel administrativo.
+  function updateCompletionNotice(){
+    const notice=$('gift-completion-note');
+    if(!notice)return;
+    const selected=selection();
+    const row=selected&&state.progress.get(Number(selected.giftId));
+    const completed=!!(row&&Number(row.total_quotas)>0&&
+      Number(row.confirmed_quotas)>=Number(row.total_quotas));
+    notice.hidden=!completed;
+  }
+  function renderProgress(){
+    const catalog=new Map(JSON.parse(document.getElementById('app-data').textContent)
+      .gifts.map(g=>[Number(g.id),g]));
     document.querySelectorAll('#gift-grid .gift').forEach(card=>{
-      card.querySelector('.gift-progress')?.remove();
       const trigger=card.querySelector('[data-gift]');
       if(!trigger)return;
+      const giftId=Number(trigger.dataset.gift),gift=catalog.get(giftId);
+      // A meta é indicativa, não bloqueia novas contribuições.
+      card.querySelector('.gift-progress')?.remove();
       trigger.removeAttribute('aria-disabled');
       trigger.classList.remove('gift-closed');
+      if(!gift||gift.unlimited||Number(gift.price)<500)return;
+      const row=state.progress.get(giftId);
+      if(!row)return;
+      const confirmed=Math.max(0,Number(row.confirmed_quotas)||0);
+      const total=Math.max(0,Number(row.total_quotas)||0);
+      if(!total)return;
+      const progress=document.createElement('div');
+      progress.className='gift-progress';
+      const label=document.createElement('span');
+      label.textContent=confirmed>total
+        ?`${confirmed} cotas confirmadas · meta de ${total}`
+        :`${confirmed} de ${total} cotas confirmadas`;
+      const track=document.createElement('div');
+      track.className='gift-progress-track';
+      track.setAttribute('role','progressbar');
+      track.setAttribute('aria-valuemin','0');
+      track.setAttribute('aria-valuemax',String(total));
+      track.setAttribute('aria-valuenow',String(Math.min(confirmed,total)));
+      track.setAttribute('aria-valuetext',label.textContent);
+      const fill=document.createElement('span');
+      fill.style.width=`${Math.min(100,Math.round(confirmed/total*100))}%`;
+      track.append(fill);
+      progress.append(label,track);
+      card.insertBefore(progress,trigger);
+      trigger.textContent='Ver formas de presentear →';
     });
+    updateCompletionNotice();
   }
   async function refresh(){
     try{
-      const pixLabels=await api.rpc('oli_pix_labels');
+      const [rows,pixLabels]=await Promise.all([
+        api.rpc('oli_progress'),
+        api.rpc('oli_pix_labels')
+      ]);
+      state.progress=new Map((rows||[]).map(row=>[Number(row.gift_id),row]));
       window.OliInvite?.setPixLabels(pixLabels||[]);
-      ensureAllGiftsAvailable();
+      renderProgress();
       progressBox.textContent='';progressBox.hidden=true;
     }catch(e){progressBox.hidden=false;progressBox.textContent='O acompanhamento está temporariamente indisponível. O Pix continua funcionando.';}
   }
-  window.addEventListener('oli:gift-opened',reset);
+  window.addEventListener('oli:gift-opened',()=>{reset();updateCompletionNotice();});
   window.addEventListener('oli:selection-changed',()=>{paintSelection();if(!confirmation.hidden)return;status.textContent='';});
   openButton.addEventListener('click',()=>{
     paintSelection();
