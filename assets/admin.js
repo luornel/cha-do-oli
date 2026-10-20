@@ -44,7 +44,7 @@
       if(e.status==='confirmed'){
         const corrections=document.createElement('div');corrections.className='entry-actions';
         const shortcut=document.createElement('button');shortcut.type='button';shortcut.className='outline';
-        shortcut.textContent='− Remover cotas deste presente';
+        shortcut.textContent='Remover cotas deste presente';
         shortcut.title='Abre a gestão de cotas com este presente selecionado; mantém o histórico do Pix';
         shortcut.addEventListener('click',()=>openRemoval(e));corrections.append(shortcut);card.append(corrections);
       }
