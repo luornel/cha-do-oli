@@ -9,20 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Identificar imagem de alta resolução no HTML arquivado
+      - name: Instalar Pillow
+        run: python -m pip install -q pillow
+      - name: Conferir imagem original do arquivo ZIP
         run: |
           python - <<'PY'
-          import zipfile, re, base64, io, struct
+          import zipfile,re,base64,io
+          from PIL import Image,ImageOps
           with zipfile.ZipFile('Site_GitHub_Pages_Cha_do_Oli.zip') as z:
             text=z.read('index.html').decode('utf-8','replace')
-          print('ARCHIVE_HTML_SIZE',len(text))
-          print('HERO_CONTEXT',text[max(0,text.find('hero-bear')-100):text.find('hero-bear')+200][:300])
-          for i,m in enumerate(re.finditer(r'data:image/([\w+.-]+);base64,([A-Za-z0-9+/=]+)',text)):
-            data=base64.b64decode(m.group(2))
-            kind=m.group(1)
-            dims='unknown'
-            if data.startswith(b'\x89PNG'):dims=struct.unpack('>II',data[16:24])
-            elif data.startswith(b'RIFF') and data[12:16]==b'VP8X':
-              dims=(int.from_bytes(data[24:27],'little')+1,int.from_bytes(data[27:30],'little')+1)
-            print('IMAGE',i,kind,len(data),dims,'POS',m.start())
+          m=re.search(r'data:image/png;base64,([A-Za-z0-9+/=]+)',text)
+          img=Image.open(io.BytesIO(base64.b64decode(m.group(1)))).convert('RGBA')
+          bg=Image.new('RGBA',img.size,'white');bg.alpha_composite(img)
+          gray=ImageOps.grayscale(bg.convert('RGB')).resize((9,8),Image.Resampling.LANCZOS)
+          p=list(gray.getdata())
+          dh=sum(((p[y*9+x]>p[y*9+x+1])<<((y*8)+x)) for y in range(8) for x in range(8))
+          reference=0xdb61311323273733
+          print('ARCHIVE_SIZE',img.size,'bbox',img.getbbox())
+          print('ARCHIVE_DHASH',f'{dh:016x}','distance',(dh^reference).bit_count())
           PY
