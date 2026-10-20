@@ -114,8 +114,10 @@ body:has(#dashboard:not([hidden])) .intro{display:none}
 .entry-remove{display:flex;justify-content:flex-end;margin-top:13px;padding-top:12px;border-top:1px solid #e9e4df}
 .entry-remove-btn{border:0;background:transparent;color:#92665b;padding:5px 2px;font-size:11px;font-weight:650;text-decoration:underline;text-underline-offset:3px}
 .entry-remove-btn:hover{color:#773f35}
-.tag{font-size:10px;font-weight:800;border-radius:99px;padding:5px 9px;background:#f6ebd6;color:#89612e;white-space:nowrap}
-.tag.confirmed{background:#efe8df;color:#6a5135}.tag.rejected{background:#f7e6e0;color:#975044}
+.tag{font-size:10px;font-weight:800;border-radius:99px;padding:5px 9px;white-space:nowrap}
+.tag.pending{background:#fff0c2;color:#81550d}
+.tag.confirmed{background:#e1efdf;color:#2e613b}
+.tag.rejected{background:#f9e0dc;color:#963e34}
 .empty{grid-column:1/-1;padding:44px 20px;text-align:center;color:#857e75;background:#fffefa;border:1px dashed #d9d3cc;border-radius:15px;font-size:13px}
 .manager-panel{max-width:none;padding:clamp(18px,2.8vw,27px)}
 .manager-gift-label,.manager-actions legend,.manager-amount label,.manager-note-label{font-size:12px;font-weight:800;color:var(--forest)}
@@ -228,6 +230,11 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
 .metric-primary{background:linear-gradient(145deg,#8a7456,#66513d);border-color:#806a4f}
 .metric-primary span,.metric-primary strong{color:#fff}
 .metric-primary small{color:#ebddc8}
+/* Cotas contabilizadas: verde-sálvia suave, mantendo o número em marrom. */
+.metric-quotas{background:linear-gradient(145deg,#e9f2e5,#ddebd9);border-color:#bfd1b6}
+.metric-quotas span{color:#49604a}
+.metric-quotas strong{color:#59432f}
+.metric-quotas small{color:#62735d}
 .metric-attention{background:#f4e6d3;border-color:#dfc7a6}
 .attention-strip{background:#f4e9db;border-color:#e3d0b7}
 .attention-icon{background:#ead8c0}
