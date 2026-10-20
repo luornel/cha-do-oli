@@ -315,7 +315,12 @@ html{scroll-padding-top:20px}
 .gift-progress-track{height:7px;border-radius:20px;background:#e9dcc9;overflow:hidden;margin:5px 0}
 .gift-progress-track>span{display:block;height:100%;background:#80906e;border-radius:inherit;transition:width .3s}
 .gift-progress small{display:block;font-size:10px}
-.gift-closed{opacity:.55;pointer-events:none}
+/* Um presente concluído continua elegível para contribuição. */
+.gift-completion-note{display:flex;flex-direction:column;gap:4px;margin:12px 0 16px;
+  padding:12px 14px;border:1px solid #dec3a0;border-radius:12px;
+  background:#f6ecdf;color:#694b32;font-size:12px;line-height:1.55;text-align:left}
+.gift-completion-note strong{font-size:13px;color:#705033}
+.gift-completion-note[hidden]{display:none!important}
 .contribution-flow{margin-top:22px;text-align:left}
 .contribution-divider{height:1px;background:#e5d4bc;margin:18px 0}
 .contribution-title{font-family:Georgia,serif;font-size:22px;color:#604632;margin:0 0 5px}
