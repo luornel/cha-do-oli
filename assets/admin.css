@@ -271,3 +271,5 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
 .action-line{gap:5px}
 .action-choice strong{font-size:10px}
 }
+/* Valor arrecadado em verde-sálvia claro, mantendo o card marrom */
+.metric-primary strong{color:#D7F1CB}
