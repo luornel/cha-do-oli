@@ -1,0 +1,48 @@
+name: Atualizar ícones do Ursinho
+on:
+  push:
+    paths:
+      - 'icons/oli-urso-novo.svg'
+      - '.github/workflows/atualizar-icones-oli.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar Pillow
+        run: python -m pip install pillow
+      - name: Gerar versões PNG do ícone
+        run: |
+          python - <<'PY'
+          import base64, io, pathlib, re
+          from PIL import Image
+          source=pathlib.Path('icons/oli-urso-novo.svg').read_text()
+          encoded=re.search(r'data:image/png;base64,([A-Za-z0-9+/=]+)', source).group(1)
+          original=Image.open(io.BytesIO(base64.b64decode(encoded))).convert('RGBA')
+          root=pathlib.Path('icons')
+          for size in (48, 192, 512):
+              original.resize((size,size),Image.Resampling.LANCZOS).save(root/f'oli-{size}.png',optimize=True)
+          bg=Image.new('RGBA',(512,512),(247,238,224,255))
+          bear=original.resize((350,350),Image.Resampling.LANCZOS)
+          bg.alpha_composite(bear,(81,81))
+          bg.save(root/'oli-maskable-512.png',optimize=True)
+          alpha=original.resize((96,96),Image.Resampling.LANCZOS).getchannel('A')
+          badge=Image.new('RGBA',(96,96),'white')
+          badge.putalpha(alpha)
+          badge.save(root/'oli-badge-96.png',optimize=True)
+          PY
+      - name: Publicar ícones atualizados
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add icons/oli-48.png icons/oli-192.png icons/oli-512.png icons/oli-maskable-512.png icons/oli-badge-96.png
+          if ! git diff --cached --quiet; then
+            git commit -m 'Atualizar ícones PNG do ursinho do Oli'
+            git push
+          fi
