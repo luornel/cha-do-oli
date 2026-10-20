@@ -9,13 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Listar arquivos de imagem no pacote original
+      - name: Identificar imagem de alta resolução no HTML arquivado
         run: |
           python - <<'PY'
-          import zipfile, os
-          path='Site_GitHub_Pages_Cha_do_Oli.zip'
-          with zipfile.ZipFile(path) as z:
-            for x in z.infolist():
-              if any(ext in x.filename.lower() for ext in ('.png','.webp','.jpg','.jpeg','.svg','.avif','.html')):
-                print(f'ASSET {x.file_size} {x.filename}')
+          import zipfile, re, base64, io, struct
+          with zipfile.ZipFile('Site_GitHub_Pages_Cha_do_Oli.zip') as z:
+            text=z.read('index.html').decode('utf-8','replace')
+          print('ARCHIVE_HTML_SIZE',len(text))
+          print('HERO_CONTEXT',text[max(0,text.find('hero-bear')-100):text.find('hero-bear')+200][:300])
+          for i,m in enumerate(re.finditer(r'data:image/([\w+.-]+);base64,([A-Za-z0-9+/=]+)',text)):
+            data=base64.b64decode(m.group(2))
+            kind=m.group(1)
+            dims='unknown'
+            if data.startswith(b'\x89PNG'):dims=struct.unpack('>II',data[16:24])
+            elif data.startswith(b'RIFF') and data[12:16]==b'VP8X':
+              dims=(int.from_bytes(data[24:27],'little')+1,int.from_bytes(data[27:30],'little')+1)
+            print('IMAGE',i,kind,len(data),dims,'POS',m.start())
           PY
