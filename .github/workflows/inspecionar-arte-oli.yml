@@ -1,0 +1,21 @@
+name: Inspecionar arquivos de arte
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/inspecionar-arte-oli.yml'
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Listar arquivos de imagem no pacote original
+        run: |
+          python - <<'PY'
+          import zipfile, os
+          path='Site_GitHub_Pages_Cha_do_Oli.zip'
+          with zipfile.ZipFile(path) as z:
+            for x in z.infolist():
+              if any(ext in x.filename.lower() for ext in ('.png','.webp','.jpg','.jpeg','.svg','.avif','.html')):
+                print(f'ASSET {x.file_size} {x.filename}')
+          PY
