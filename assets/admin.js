@@ -13,6 +13,10 @@
     $('paid-units').textContent=String(balances.reduce((a,g)=>a+Number(g.confirmed_quotas),0));
     $('paid-amount').textContent=money(balances.reduce((a,g)=>a+Number(g.confirmed_quotas)*Number(g.unit_price_cents),0));
     $('pending-count').textContent=String(pending.length);
+    // Os avisos do novo layout refletem o mesmo conjunto de solicitações.
+    $('pending-quick-count').textContent=String(pending.length);
+    $('pending-nav-count').textContent=String(pending.length);
+    $('pending-nav-count').hidden=pending.length===0;
     $('pending-filter-count').textContent=pending.length ? String(pending.length) : '';
     $('pending-amount').textContent=money(pending.reduce((a,e)=>a+Number(e.amount_cents),0));
     $('total-count').textContent=`${entries.length} registros`;
