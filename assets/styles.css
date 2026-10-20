@@ -318,7 +318,7 @@ html{scroll-padding-top:20px}
 /* Um presente concluído continua elegível para contribuição. */
 .gift-completion-note{display:flex;flex-direction:column;gap:4px;margin:12px 0 16px;
   padding:12px 14px;border:1px solid #dec3a0;border-radius:12px;
-  background:#f6ecdf;color:#694b32;font-size:12px;line-height:1.55;text-align:left}
+  background:#f6ecdf;color:#694b32;font-size:12px;line-height:1.55;text-align:center}
 .gift-completion-note strong{font-size:13px;color:#705033;text-align:center}
 .gift-completion-note[hidden]{display:none!important}
 .contribution-flow{margin-top:22px;text-align:left}
