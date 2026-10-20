@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="Chá do Oli">
   <link rel="manifest" href="./manifest.webmanifest?v=admin-pwa-20261019">
   <link rel="icon" type="image/png" sizes="48x48" href="./icons/oli-48.png?v=admin-pwa-20261019">
-  <link rel="stylesheet" href="assets/admin.css?v=atelier-20261019">
+  <link rel="stylesheet" href="assets/admin.css?v=marrom-filtros-20261019">
   <title>Ateliê do Oli · Administração</title>
 </head>
 <body>
@@ -95,10 +95,10 @@
           <span class="counts" id="total-count">0 registros</span>
         </div>
         <div class="filters" role="group" aria-label="Filtrar contribuições">
-          <button type="button" data-filter="pending" class="active" aria-pressed="true">Pendentes <span id="pending-filter-count" class="filter-count"></span></button>
+          <button type="button" data-filter="all" class="active" aria-pressed="true">Todas</button>
+          <button type="button" data-filter="pending" class="filter-pending" aria-pressed="false">Pendentes <span id="pending-filter-count" class="filter-count" aria-label="Pendências" hidden></span></button>
           <button type="button" data-filter="confirmed" aria-pressed="false">Confirmadas</button>
           <button type="button" data-filter="rejected" aria-pressed="false">Rejeitadas</button>
-          <button type="button" data-filter="all" aria-pressed="false">Todas</button>
         </div>
         <p id="dashboard-message" class="message" role="status"></p>
         <div id="entries" class="entries" aria-live="polite"></div>
@@ -121,9 +121,9 @@
               <legend>2. O que você deseja fazer?</legend>
               <input id="manage-action" name="action" type="hidden" value="add">
               <div class="action-choices" role="group" aria-label="Tipo de ajuste">
-                <button type="button" class="action-choice active" data-manage-action="add" aria-pressed="true"><span class="choice-icon" aria-hidden="true">＋</span><strong>Adicionar cotas</strong><small>Registrar cotas recebidas fora do site</small></button>
-                <button type="button" class="action-choice" data-manage-action="remove" aria-pressed="false"><span class="choice-icon" aria-hidden="true">−</span><strong>Remover cotas</strong><small>Descontar cotas contabilizadas</small></button>
-                <button type="button" class="action-choice" data-manage-action="reset" aria-pressed="false"><span class="choice-icon" aria-hidden="true">↺</span><strong>Zerar cotas</strong><small>Voltar o saldo deste presente a zero</small></button>
+                <button type="button" class="action-choice active" data-manage-action="add" aria-pressed="true"><span class="action-line"><span class="choice-icon" aria-hidden="true">＋</span><strong>Adicionar cotas</strong></span><small>Registrar cotas recebidas fora do site</small></button>
+                <button type="button" class="action-choice" data-manage-action="remove" aria-pressed="false"><span class="action-line"><span class="choice-icon" aria-hidden="true">−</span><strong>Remover cotas</strong></span><small>Descontar cotas contabilizadas</small></button>
+                <button type="button" class="action-choice" data-manage-action="reset" aria-pressed="false"><span class="action-line"><span class="choice-icon" aria-hidden="true">↺</span><strong>Zerar cotas</strong></span><small>Voltar o saldo deste presente a zero</small></button>
               </div>
             </fieldset>
             <div class="manager-amount">
@@ -170,7 +170,7 @@
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=atelier-20261019"></script>
+  <script defer src="assets/admin.js?v=marrom-filtros-20261019"></script>
   <script defer src="assets/pwa-admin.js?v=webpush-20261019"></script>
   <script defer src="assets/admin-nav.js?v=atelier-20261019"></script>
 </body>

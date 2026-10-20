@@ -4,7 +4,7 @@
   const $=id=>document.getElementById(id);
   const api=window.OliBackend;
   const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(n)||0)/100);
-  let entries=[], balances=[],history=[], filter='pending', busy=false;
+  let entries=[], balances=[],history=[], filter='all', busy=false;
   function show(id,value=true){$(id).hidden=!value;}
   function message(id,text){$(id).textContent=text||'';}
   function render(){
@@ -17,7 +17,9 @@
     $('pending-quick-count').textContent=String(pending.length);
     $('pending-nav-count').textContent=String(pending.length);
     $('pending-nav-count').hidden=pending.length===0;
-    $('pending-filter-count').textContent=pending.length ? String(pending.length) : '';
+    $('pending-filter-count').textContent=String(pending.length);
+    $('pending-filter-count').hidden=pending.length===0;
+    $('pending-filter-count').setAttribute('aria-label',`${pending.length} solicitações pendentes`);
     $('pending-amount').textContent=money(pending.reduce((a,e)=>a+Number(e.amount_cents),0));
     $('total-count').textContent=`${entries.length} registros`;
     const selected=entries.filter(e=>filter==='all'||e.status===filter);
