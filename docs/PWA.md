@@ -29,3 +29,16 @@ As cores e a ilustração foram adaptadas da identidade visual atual do Chá do 
 ## Ícone pequeno das notificações (Android)
 
 Na barra de status e nas notificações recolhidas, o Android utiliza a propriedade `badge` da API de notificações, que precisa ser uma silhueta monocromática com transparência. Foi incluído `icons/oli-badge-96.png` (96 × 96, PNG com fundo transparente) para essa posição. O ícone colorido `oli-192.png` permanece como ícone principal da notificação e do aplicativo. Para testar a mudança, descarte a notificação antiga, recarregue o painel e use **Testar aviso** novamente. Não é necessário reinstalar o PWA.
+
+
+## Web Push (2026-10-19) — avisos com o PWA fechado
+
+A área administrativa agora utiliza **Web Push com VAPID, Supabase Edge Functions e um trigger assíncrono pg_net**. Quando um convidado registra uma contribuição no convite (status `pending`), o banco aciona a função `oli-web-push`. O serviço encaminha o aviso aos celulares inscritos, mesmo se o painel estiver fechado, desde que o Android permita e o serviço de push esteja disponível. Não significa que um Pix foi recebido: o convidado deve clicar em "Confirmar contribuição" para gerar o pedido.
+
+**Para ativar:** entre no painel administrativo pelo Chrome do Samsung, toque em **Ativar Web Push**, aceite a solicitação de permissão e toque em **Testar Web Push**. Feche o app e peça que outra pessoa registre uma solicitação de teste no convite; depois rejeite a solicitação no painel se não houver Pix real. Um dispositivo só é registrado após autenticação de administrador.
+
+**Privacidade:** a notificação informa o presente e o valor, sem nome/contato do convidado. As inscrições são protegidas por RLS e só podem ser geridas pela função autenticada. A chave VAPID privada e o segredo HMAC do webhook são guardados no Supabase Vault, nunca no site estático ou neste repositório. O evento de banco é assinado e possui validade curta. Não há integração com o extrato Nubank.
+
+**Backend:** `supabase/functions/oli-web-push/index.ts` e `supabase/migrations/20261019_web_push.sql`. O service worker `sw.js` ouve `push`, abre a tela de contribuições no clique e armazena em cache somente ícones públicos. Esta implantação da Edge Function não ocorre automaticamente pelo GitHub Pages: alterações futuras do código backend precisam de novo deploy no Supabase.
+
+**Limites:** bateria/restrições do Android, conexão, permissão ou assinatura revogada podem impedir a entrega. Quando um convidado registra o pedido, o backend pode enviar avisos mesmo com o navegador fechado; isso não é confirmação automática do Pix.
