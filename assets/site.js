@@ -147,7 +147,20 @@
   }catch(e){}
   t.remove();return success;
  }
- function successfulCopy(label){$('#copy-fallback').hidden=true;$('#copy-status').textContent=label+' copiado!';toast(label+' copiado!');}
+ function scrollToContribution(){
+  const flow=$('#contribution-flow'),dialog=$('#gift-overlay .dialog');
+  if(!flow||flow.hidden||!dialog||!$('#gift-overlay').classList.contains('open'))return;
+  // Rola somente dentro do modal, mantendo a confirmação em destaque.
+  const top=dialog.scrollTop+flow.getBoundingClientRect().top-dialog.getBoundingClientRect().top-12;
+  const reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  dialog.scrollTo({top:Math.max(0,top),behavior:reducedMotion?'auto':'smooth'});
+ }
+ function successfulCopy(label){
+  $('#copy-fallback').hidden=true;
+  $('#copy-status').textContent=label+' copiado!';
+  toast(label+' copiado!');
+  scrollToContribution();
+ }
  function showCopyFallback(v){
   const box=$('#copy-fallback'),input=$('#pix-fallback');
   input.value=v;box.hidden=false;
