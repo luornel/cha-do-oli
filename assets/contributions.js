@@ -24,8 +24,8 @@
       <div class="thank-you-art"><img src="assets/oli-e-amigos.png" alt="O Pequeno Urso com seus amigos: pato, gato, galinha e coruja" width="1448" height="1086"><span aria-hidden="true">✦</span><span aria-hidden="true">✧</span><span aria-hidden="true">✦</span></div>
       <p class="thank-you-chapter">Mais um capítulo da nossa história</p>
       <h2 id="thank-you-title" tabindex="-1">Seu carinho chegou até aqui! ♡</h2>
-      <p class="thank-you-message">Sua contribuição foi registrada com carinho. Obrigado por fazer parte da história do Oli!</p>
-      <div class="thank-you-receipt"><p>Código da contribuição</p><strong id="contribution-receipt"></strong><p>Registro recebido. O Pix ainda será conferido.</p></div>
+      <p class="thank-you-message">Sua contribuição foi registrada com carinho.<br>Obrigado por contribuir com o nosso chá online!</p>
+      <div class="thank-you-receipt"><p>Código da contribuição</p><strong id="contribution-receipt"></strong><p>Registro recebido. Obrigado por fazer parte da história do Oli!</p></div>
       <button type="button" class="primary-btn thank-you-back">Voltar aos presentes</button>
       <p class="thank-you-footer">Feito com carinho, para uma história especial ♡</p>`;
     confirmation.querySelector('#contribution-receipt').textContent=code||'—';
