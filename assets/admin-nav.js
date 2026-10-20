@@ -2,7 +2,35 @@
 (() => {
   'use strict';
   const links=[...document.querySelectorAll('[data-panel-link]')];
-  const sections=links.map(link=>document.getElementById(link.dataset.panelLink)).filter(Boolean);
+  const sections=[...new Set(links.map(link=>document.getElementById(link.dataset.panelLink)).filter(Boolean))];
+  const menuToggle=document.getElementById('mobile-menu-toggle');
+  const mobileMenu=document.getElementById('mobile-menu');
+  const mobileLogout=document.getElementById('mobile-menu-logout');
+  function setMobileMenu(open, restoreFocus=false){
+    if(!menuToggle||!mobileMenu)return;
+    const canOpen=!!(open&&visible()&&window.innerWidth<=760);
+    mobileMenu.hidden=!canOpen;
+    menuToggle.setAttribute('aria-expanded',String(canOpen));
+    menuToggle.setAttribute('aria-label',canOpen?'Fechar menu':'Abrir menu');
+    if(!canOpen&&restoreFocus)menuToggle.focus({preventScroll:true});
+  }
+  if(menuToggle&&mobileMenu){
+    menuToggle.addEventListener('click',()=>setMobileMenu(mobileMenu.hidden));
+    mobileMenu.addEventListener('click',event=>{
+      if(event.target.closest('a'))setMobileMenu(false);
+    });
+    mobileLogout?.addEventListener('click',()=>{
+      setMobileMenu(false);
+      document.getElementById('logout')?.click();
+    });
+    document.addEventListener('pointerdown',event=>{
+      if(!mobileMenu.hidden&&!mobileMenu.contains(event.target)&&!menuToggle.contains(event.target))setMobileMenu(false);
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&!mobileMenu.hidden)setMobileMenu(false,true);
+    });
+    window.addEventListener('oli:admin-logout',()=>setMobileMenu(false));
+  }
   const dashboard=document.getElementById('dashboard');
   function visible(){return dashboard&&!dashboard.hidden;}
   function mark(id){
@@ -26,7 +54,7 @@
     scrollPending=true;
     requestAnimationFrame(()=>{scrollPending=false;current();});
   },{passive:true});
-  window.addEventListener('resize',current);
+  window.addEventListener('resize',()=>{current();if(window.innerWidth>760)setMobileMenu(false);});
   document.querySelectorAll('a[href^="#"]').forEach(link=>link.addEventListener('click',()=>{
     const target=decodeURIComponent(link.getAttribute('href').slice(1));
     if(sections.some(x=>x.id===target))mark(target);
@@ -41,7 +69,7 @@
       requestAnimationFrame(()=>section.scrollIntoView({behavior:'instant',block:'start'}));
     }else mark('visao-geral');
   }
-  window.addEventListener('oli:admin-ready',restore);
+  window.addEventListener('oli:admin-ready',()=>{setMobileMenu(false);restore();});
   window.addEventListener('hashchange',()=>{
     const id=decodeURIComponent(location.hash.slice(1));
     if(sections.some(x=>x.id===id))mark(id);
