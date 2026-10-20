@@ -19,27 +19,38 @@
   const submit=form.querySelector('button[type=submit]');
   let current=null;
   function showThankYou(receiptId){
-    // Mensagem sempre reconstruída com a versão atual, mesmo se o HTML estiver em cache.
     const code=String(receiptId||'').split('-')[0].toUpperCase();
-    const heading=document.createElement('strong');
-    heading.textContent='Recebemos sua contribuição!';
-    const reference=document.createElement('p');
-    reference.textContent='Código da contribuição: ';
-    const value=document.createElement('span');
-    value.id='contribution-receipt';
-    value.textContent=code||'—';
-    reference.append(value);
-    const thanks=document.createElement('p');
-    thanks.textContent='Obrigado por contribuir com o nosso chá!';
-    confirmation.replaceChildren(heading,reference,thanks);
+    confirmation.innerHTML=`
+      <div class="thank-you-art"><img src="assets/oli-e-amigos.png" alt="O Pequeno Urso com seus amigos: pato, gato, galinha e coruja" width="1448" height="1086"><span aria-hidden="true">✦</span><span aria-hidden="true">✧</span><span aria-hidden="true">✦</span></div>
+      <p class="thank-you-chapter">Mais um capítulo da nossa história</p>
+      <h2 id="thank-you-title" tabindex="-1">Seu carinho chegou até aqui! ♡</h2>
+      <p class="thank-you-message">Sua contribuição foi registrada com carinho. Obrigado por fazer parte da história do Oli!</p>
+      <div class="thank-you-receipt"><p>Código da contribuição</p><strong id="contribution-receipt"></strong><p>Registro recebido. O Pix ainda será conferido.</p></div>
+      <button type="button" class="primary-btn thank-you-back">Voltar aos presentes</button>
+      <p class="thank-you-footer">Feito com carinho, para uma história especial ♡</p>`;
+    confirmation.querySelector('#contribution-receipt').textContent=code||'—';
+    confirmation.querySelector('.thank-you-back').addEventListener('click',()=>{
+      document.querySelector('[data-close="gift"]').click();
+    });
     flow.classList.add('is-confirmed');
+    const dialog=flow.closest('.dialog');
+    dialog.classList.add('is-thank-you');
+    dialog.setAttribute('aria-labelledby','thank-you-title');
     form.hidden=true;
+    form.reset();
     openButton.hidden=true;
     confirmation.hidden=false;
     status.textContent='';
+    dialog.scrollTop=0;
+    confirmation.querySelector('h2').focus({preventScroll:true});
   }
   function selection(){return window.OliInvite && window.OliInvite.getSelection();}
-  function reset(){flow.classList.remove('is-confirmed');form.hidden=true;confirmation.hidden=true;status.textContent='';submit.disabled=false;current=selection();paintSelection();}
+  function reset(){
+    flow.closest('.dialog').classList.remove('is-thank-you');
+    flow.closest('.dialog').setAttribute('aria-labelledby','dialog-title');
+    flow.classList.remove('is-confirmed');form.hidden=true;confirmation.hidden=true;status.textContent='';submit.disabled=false;current=selection();paintSelection();
+  }
+
   function paintSelection(){
     current=selection();
     if (!current) return;
