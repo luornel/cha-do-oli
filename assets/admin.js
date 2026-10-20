@@ -17,6 +17,12 @@
     $('pending-quick-count').textContent=String(pending.length);
     $('pending-nav-count').textContent=String(pending.length);
     $('pending-nav-count').hidden=pending.length===0;
+    const mobilePending=$('pending-nav-count-mobile');
+    if(mobilePending){
+      mobilePending.textContent=String(pending.length);
+      mobilePending.hidden=pending.length===0;
+      mobilePending.setAttribute('aria-label',`${pending.length} contribuições pendentes`);
+    }
     $('pending-filter-count').textContent=String(pending.length);
     $('pending-filter-count').hidden=pending.length===0;
     $('pending-filter-count').setAttribute('aria-label',`${pending.length} solicitações pendentes`);
