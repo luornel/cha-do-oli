@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="Chá do Oli">
   <link rel="manifest" href="./manifest.webmanifest?v=admin-pwa-20261019">
   <link rel="icon" type="image/png" sizes="48x48" href="./icons/oli-48.png?v=admin-pwa-20261019">
-  <link rel="stylesheet" href="assets/admin.css?v=valor-contabilizado-oliva-20261020">
+  <link rel="stylesheet" href="assets/admin.css?v=menu-mobile-20261020">
   <title>Ateliê do Oli · Administração</title>
 </head>
 <body>
@@ -24,7 +24,32 @@
         <a href="./" class="back-link"><span aria-hidden="true">↗</span> <span>Ver convite</span></a>
         <button type="button" id="logout" class="ghost header-logout" hidden>Sair</button>
       </div>
+      <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-controls="mobile-menu" aria-expanded="false" aria-label="Abrir menu">
+        <span class="hamburger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
     </div>
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Menu de navegação" hidden>
+      <a class="mobile-menu-item" href="./">
+        <span class="mobile-menu-symbol" aria-hidden="true">↗</span><span class="mobile-menu-item-label">Ver convite</span>
+      </a>
+      <a class="mobile-menu-item is-current" href="#visao-geral" data-panel-link="visao-geral" aria-current="location">
+        <span class="mobile-menu-symbol" aria-hidden="true">◫</span><span class="mobile-menu-item-label">Visão geral</span>
+      </a>
+      <a class="mobile-menu-item" href="#contribuicoes" data-panel-link="contribuicoes">
+        <span class="mobile-menu-symbol" aria-hidden="true">♡</span><span class="mobile-menu-item-label">Contribuições</span>
+        <span class="mobile-menu-badge" id="pending-nav-count-mobile" hidden>0</span>
+      </a>
+      <a class="mobile-menu-item" href="#gerenciar-cotas" data-panel-link="gerenciar-cotas">
+        <span class="mobile-menu-symbol" aria-hidden="true">±</span><span class="mobile-menu-item-label">Gerenciar cotas</span>
+      </a>
+      <a class="mobile-menu-item" href="#aplicativo" data-panel-link="aplicativo">
+        <span class="mobile-menu-symbol" aria-hidden="true">⚙</span><span class="mobile-menu-item-label">Aplicativo</span>
+      </a>
+      <div class="mobile-menu-divider" role="separator"></div>
+      <button type="button" id="mobile-menu-logout" class="mobile-menu-item mobile-menu-logout">
+        <span class="mobile-menu-symbol" aria-hidden="true">↪</span><span class="mobile-menu-item-label">Sair</span>
+      </button>
+    </nav>
   </header>
 
   <main class="admin-shell">
@@ -182,8 +207,8 @@
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=presentes-abertos-20261020"></script>
+  <script defer src="assets/admin.js?v=menu-mobile-20261020"></script>
   <script defer src="assets/pwa-admin.js?v=webpush-20261019"></script>
-  <script defer src="assets/admin-nav.js?v=atelier-20261019"></script>
+  <script defer src="assets/admin-nav.js?v=menu-mobile-20261020"></script>
 </body>
 </html>
