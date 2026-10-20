@@ -227,14 +227,10 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
 .workspace-nav{background:linear-gradient(155deg,#8c7558 0%,#624b37 95%);box-shadow:0 12px 30px #51392320}
 .nav-link.is-current{background:#fffaf2;color:#604b36}
 .nav-link.is-current .nav-symbol{background:#f0e1ce}
-.metric-primary{background:linear-gradient(145deg,#8a7456,#66513d);border-color:#806a4f}
-.metric-primary span,.metric-primary strong{color:#fff}
-.metric-primary small{color:#ebddc8}
-/* Cotas contabilizadas: verde-sálvia suave, mantendo o número em marrom. */
-.metric-quotas{background:linear-gradient(145deg,#e9f2e5,#ddebd9);border-color:#bfd1b6}
-.metric-quotas span{color:#49604a}
-.metric-quotas strong{color:#59432f}
-.metric-quotas small{color:#62735d}
+/* Valor contabilizado: verde-oliva fechado, harmonizado com a identidade marrom. */
+.metric-primary{background:linear-gradient(145deg,#687d62,#465e4b);border-color:#536b53}
+.metric-primary span,.metric-primary strong{color:#fffaf0}
+.metric-primary small{color:#dce9d7}
 .metric-attention{background:#f4e6d3;border-color:#dfc7a6}
 .attention-strip{background:#f4e9db;border-color:#e3d0b7}
 .attention-icon{background:#ead8c0}
@@ -278,8 +274,8 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
 .action-line{gap:5px}
 .action-choice strong{font-size:10px}
 }
-/* Valor arrecadado em verde-sálvia claro, mantendo o card marrom */
-.metric-primary strong{color:#D7F1CB}
+/* Valor principal em creme: o fundo do card é verde, não o número. */
+.metric-primary strong{color:#fffaf0}
 
 /* Prévia reposicionada e dupla confirmação de zeragem */
 .manager-amount{display:block;margin:0 0 17px}
