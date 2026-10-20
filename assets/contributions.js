@@ -1,11 +1,11 @@
-/* Convidados: status público agregado e solicitação após Pix. */
+/* Convidados: Pix e solicitações; o progresso fica apenas no painel administrativo. */
 (function () {
   'use strict';
   const api=window.OliBackend;
   if (!api || !api.configured) return;  // convite atual continua funcionando sem banco
   const $=(id)=>document.getElementById(id);
   const moneyCents=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(n)||0)/100);
-  const state={progress:new Map(),requesting:false};
+  const state={requesting:false};
   const flow=$('contribution-flow');
   if (!flow) return;
   flow.hidden=false;
@@ -47,56 +47,28 @@
     const label=product&&!product.unlimited&&Number(product.price)<500?'Valor integral':`${current.units} ${current.units===1?'cota':'cotas'}`;
     info.textContent=`${current.giftName} · ${label} · ${moneyCents(current.amountCents)}`;
   }
-  function progressRows(){
-    // Os presentes abaixo de R$ 500 podem ser presenteados repetidas vezes,
-    // sem barra de cotas e sem esgotamento no convite.
-    const catalog=new Map(JSON.parse(document.getElementById('app-data').textContent).gifts.map(g=>[Number(g.id),g]));
+  function ensureAllGiftsAvailable(){
+    // O progresso e a meta de cada presente são privados ao painel administrativo.
     document.querySelectorAll('#gift-grid .gift').forEach(card=>{
-      const trigger=card.querySelector('[data-gift]');if(!trigger)return;
-      const giftId=Number(trigger.dataset.gift),item=catalog.get(giftId);
-      if(!item||item.unlimited||Number(item.price)<500){card.querySelector('.gift-progress')?.remove();trigger.removeAttribute('aria-disabled');trigger.classList.remove('gift-closed');return;}
-      const row=state.progress.get(giftId);if(!row)return;
-      const confirmed=Number(row.confirmed_quotas)||0;
-      const free=Number(trigger.dataset.gift)===23;
-      const total=Number(row.total_quotas)||0;
-      const remaining=Math.max(0,total-confirmed);
-      let el=card.querySelector('.gift-progress');
-      if(!el){el=document.createElement('div');el.className='gift-progress';card.insertBefore(el,trigger);}
-      el.replaceChildren();
-      const label=document.createElement('span');label.textContent=free?`${confirmed} cotas livres confirmadas`:`${confirmed} de ${total} cotas confirmadas`;
-      if(free){
-        const remain=document.createElement('small');remain.textContent='';
-        el.append(label,remain);
-      }else{
-        const track=document.createElement('div');track.className='gift-progress-track';track.setAttribute('role','progressbar');track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax',String(total));track.setAttribute('aria-valuenow',String(confirmed));
-        const fill=document.createElement('span');fill.style.width=`${total?Math.min(100,Math.round(100*confirmed/total)):0}%`;track.append(fill);
-        el.append(label,track);
-        const soldOut=remaining===0;
-        trigger.textContent=soldOut?'Presente entregue!':Number(trigger.dataset.gift)<=7?'Presentear →':'Ver formas de presentear →';
-        trigger.setAttribute('aria-disabled',String(soldOut));trigger.classList.toggle('gift-closed',soldOut);
-      }
+      card.querySelector('.gift-progress')?.remove();
+      const trigger=card.querySelector('[data-gift]');
+      if(!trigger)return;
+      trigger.removeAttribute('aria-disabled');
+      trigger.classList.remove('gift-closed');
     });
   }
   async function refresh(){
     try{
-      const [rows,pixLabels]=await Promise.all([api.rpc('oli_progress'),api.rpc('oli_pix_labels')]);
-      state.progress=new Map((rows||[]).map(r=>[Number(r.gift_id),r]));
+      const pixLabels=await api.rpc('oli_pix_labels');
       window.OliInvite?.setPixLabels(pixLabels||[]);
-      progressRows();
+      ensureAllGiftsAvailable();
       progressBox.textContent='';progressBox.hidden=true;
     }catch(e){progressBox.hidden=false;progressBox.textContent='O acompanhamento está temporariamente indisponível. O Pix continua funcionando.';}
-  }
-  function isOverLimit(){
-    if(!current)return false;
-    if(current.giftId===23||Number(JSON.parse(document.getElementById('app-data').textContent).gifts.find(g=>g.id===current.giftId)?.price)<500)return false;
-    const row=state.progress.get(current.giftId);if(!row)return false;
-    return current.units>Math.max(0,Number(row.total_quotas)-Number(row.confirmed_quotas));
   }
   window.addEventListener('oli:gift-opened',reset);
   window.addEventListener('oli:selection-changed',()=>{paintSelection();if(!confirmation.hidden)return;status.textContent='';});
   openButton.addEventListener('click',()=>{
     paintSelection();
-    if(isOverLimit()){status.textContent='Quantidade indisponível. Escolha menos cotas ou outro presente.';return;}
     form.hidden=false;openButton.hidden=true;
     form.querySelector('input[name=payer_name]').focus();
   });
@@ -104,7 +76,7 @@
   form.addEventListener('submit',async ev=>{
     ev.preventDefault();if(state.requesting)return;
     paintSelection();
-    if(!current||isOverLimit()){status.textContent='Verifique a quantidade de cotas disponíveis.';return;}
+    if(!current){status.textContent='Selecione um presente para continuar.';return;}
     if(!form.reportValidity())return;
     const name=form.elements.payer_name.value.trim();
     const contact=form.elements.payer_contact.value.trim();
