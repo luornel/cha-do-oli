@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="Chá do Oli">
   <link rel="manifest" href="./manifest.webmanifest?v=admin-pwa-20261019">
   <link rel="icon" type="image/png" sizes="48x48" href="./icons/oli-48.png?v=admin-pwa-20261019">
-  <link rel="stylesheet" href="assets/admin.css?v=valor-verde-20261020">
+  <link rel="stylesheet" href="assets/admin.css?v=previa-zeragem-20261020">
   <title>Ateliê do Oli · Administração</title>
 </head>
 <body>
@@ -130,13 +130,25 @@
               <label id="manage-units-box" for="manage-units">3. Quantas cotas?
                 <input type="number" id="manage-units" name="units" min="1" max="10000" step="1" value="1" required inputmode="numeric">
               </label>
-              <div class="balance-preview" aria-live="polite"><span>Saldo após o ajuste</span><strong id="manage-preview">—</strong><small id="manage-preview-caption">Selecione a ação e informe a quantidade.</small></div>
             </div>
             <label class="manager-note-label" for="manage-note">Observação (opcional)
               <input id="manage-note" type="text" name="note" maxlength="200" placeholder="Ex.: corrigir contagem do presente">
             </label>
+            <div class="balance-preview" aria-live="polite">
+              <span>Prévia · Saldo após o ajuste</span>
+              <strong id="manage-preview">—</strong>
+              <small id="manage-preview-caption">Selecione a ação e informe a quantidade.</small>
+            </div>
             <p class="adjust-info"><span aria-hidden="true">ⓘ</span> Ajustes alteram o saldo exibido no convite. O histórico dos pagamentos continua preservado.</p>
             <button class="primary manage-submit" type="submit" id="manage-submit">Adicionar cotas</button>
+            <div class="reset-confirmation" id="reset-confirm-panel" hidden role="group" aria-labelledby="reset-confirm-title">
+              <strong id="reset-confirm-title">Confirme a zeragem das cotas</strong>
+              <p id="reset-confirm-details">Você está prestes a zerar as cotas deste presente.</p>
+              <div class="reset-confirm-actions">
+                <button type="button" id="reset-confirm-cancel" class="outline">Cancelar</button>
+                <button type="button" id="reset-confirm-final" class="primary">Confirmar zeragem</button>
+              </div>
+            </div>
             <p class="message" id="manage-message" role="status"></p>
           </form>
           <details class="adjustment-history"><summary>Histórico de ajustes manuais <span aria-hidden="true">⌄</span></summary><div id="adjustment-history-list" class="history-list"></div></details>
@@ -170,7 +182,7 @@
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=marrom-filtros-20261019"></script>
+  <script defer src="assets/admin.js?v=previa-zeragem-20261020"></script>
   <script defer src="assets/pwa-admin.js?v=webpush-20261019"></script>
   <script defer src="assets/admin-nav.js?v=atelier-20261019"></script>
 </body>

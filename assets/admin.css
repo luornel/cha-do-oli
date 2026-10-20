@@ -273,3 +273,38 @@ body{background:radial-gradient(circle at 100% 10%,#fff8ed 0%,transparent 36%),v
 }
 /* Valor arrecadado em verde-sálvia claro, mantendo o card marrom */
 .metric-primary strong{color:#D7F1CB}
+
+/* Prévia reposicionada e dupla confirmação de zeragem */
+.manager-amount{display:block;margin:0 0 17px}
+.manager-amount #manage-units-box{max-width:265px}
+.manager-amount input{max-width:265px}
+.manager-note-label{margin-bottom:17px}
+.balance-preview{
+ display:flex;flex-direction:column;gap:5px;max-width:none;
+ margin:0 0 14px;padding:16px 18px;
+ background:#f4ebdf;border:1px solid #e4d1b9;border-left:4px solid #967c59;
+ border-radius:13px;min-height:0;
+}
+.balance-preview span{font-size:11px;font-weight:750;color:#78604b}
+.balance-preview strong{font-size:26px;color:#59432f;line-height:1.2}
+.balance-preview small{font-size:11px;color:#82705b}
+.balance-preview.invalid{background:#fbede7;border-color:#c99689}
+.adjust-info{margin-top:0!important}
+.reset-confirmation{
+ margin:14px 0 0;padding:17px 19px;border-radius:13px;
+ background:#f8e9e3;border:1px solid #d6a99c;border-left:4px solid #96645b;
+ max-width:710px;
+}
+.reset-confirmation>strong{display:block;font-size:14px;color:#793f38}
+.reset-confirmation p{margin:7px 0 14px;font-size:12px;line-height:1.65;color:#77574b}
+.reset-confirm-actions{display:flex;gap:9px;flex-wrap:wrap}
+.reset-confirm-actions button{min-width:145px}
+.reset-confirm-actions .primary{background:#8e5148;border-color:#8e5148}
+.reset-confirm-actions .primary:hover:not(:disabled){background:#783f37}
+@media(max-width:530px){
+ .manager-amount #manage-units-box,.manager-amount input{max-width:none}
+ .balance-preview{padding:14px 15px}
+ .reset-confirmation{padding:15px}
+ .reset-confirm-actions{display:grid;grid-template-columns:1fr 1fr}
+ .reset-confirm-actions button{min-width:0;padding:10px 6px}
+}

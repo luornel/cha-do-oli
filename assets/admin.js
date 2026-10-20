@@ -96,8 +96,18 @@
       historyList.append(p);
     }
   }
+  let resetPending=null;
+  function dismissResetConfirmation(){
+    resetPending=null;
+    $('reset-confirm-panel').hidden=true;
+  }
   function paintManager(){
     const g=balances.find(v=>String(v.gift_id)===$('manage-gift').value);
+    if(resetPending && (document.getElementById('manage-action').value!=='reset'
+      || !g || Number(g.gift_id)!==resetPending.giftId
+      || Number(g.confirmed_quotas)!==resetPending.before)){
+      dismissResetConfirmation();
+    }
     const mode=$('manage-action').value;
     const box=$('manage-units-box'),input=$('manage-units');
     box.hidden=mode==='reset';input.required=mode!=='reset';
@@ -141,17 +151,29 @@
     document.getElementById('gerenciar-cotas').scrollIntoView({behavior:'smooth',block:'start'});
     document.getElementById('manage-units').focus({preventScroll:true});
   }
-  $('manage-gift').addEventListener('change',()=>{message('manage-message','');paintManager();});
+  $('manage-gift').addEventListener('change',()=>{dismissResetConfirmation();message('manage-message','');paintManager();});
   $('manage-units').addEventListener('input',paintManager);
   document.querySelectorAll('[data-manage-action]').forEach(btn=>{
     btn.addEventListener('click',()=>{
+      dismissResetConfirmation();
       $('manage-action').value=btn.dataset.manageAction;
       message('manage-message','');paintManager();
     });
   });
-  $('quota-adjust-form').addEventListener('submit',async ev=>{
-    ev.preventDefault();if(busy)return;
-    const form=ev.currentTarget,selected=balances.find(g=>String(g.gift_id)===form.elements.gift_id.value);
+  $('reset-confirm-cancel').addEventListener('click',()=>{
+    dismissResetConfirmation();
+    message('manage-message','Zeragem cancelada. Nenhuma cota foi alterada.');
+    $('manage-submit').focus();
+  });
+  $('reset-confirm-final').addEventListener('click',()=>saveAdjustment(true));
+  $('quota-adjust-form').addEventListener('submit',ev=>{
+    ev.preventDefault();
+    void saveAdjustment(false);
+  });
+  async function saveAdjustment(explicitResetConfirmation){
+    if(busy)return;
+    const form=$('quota-adjust-form');
+    const selected=balances.find(g=>String(g.gift_id)===form.elements.gift_id.value);
     if(!selected||!form.reportValidity())return;
     const action=form.elements.action.value;
     const count=action==='reset'?null:Number(form.elements.units.value);
@@ -160,17 +182,50 @@
     if(!Number.isInteger(after)||after<0||(!selected.is_unlimited&&after>Number(selected.total_quotas))){
       message('manage-message','Quantidade inválida ou superior ao disponível neste presente.');return;
     }
-    const verb=action==='reset'?'ZERAR todas as cotas contabilizadas':action==='remove'?'REMOVER cotas contabilizadas':'ADICIONAR cotas contabilizadas';
-    if(!window.confirm(`${verb} de ${selected.gift_name}?\n\nAntes: ${before} cotas\nDepois: ${after} cotas\n\nO histórico de pagamentos será preservado.`))return;
-    busy=true;$('manage-submit').disabled=true;message('manage-message','Salvando ajuste…');
+    if(action==='reset'){
+      if(before<=0){dismissResetConfirmation();paintManager();return;}
+      if(!explicitResetConfirmation){
+        // A primeira ação apenas abre a segunda etapa. Nenhuma chamada ao banco é realizada.
+        resetPending={giftId:Number(selected.gift_id),before};
+        $('reset-confirm-details').textContent=`Deseja realmente zerar as ${before} ${before===1?'cota contabilizada':'cotas contabilizadas'} de ${selected.gift_name}? O registro dos pagamentos continuará preservado.`;
+        $('reset-confirm-panel').hidden=false;
+        message('manage-message','');
+        $('reset-confirm-final').focus();
+        return;
+      }
+      // A zeragem só pode ser executada pelo segundo botão, com o mesmo presente e saldo.
+      if(!resetPending||resetPending.giftId!==Number(selected.gift_id)||resetPending.before!==before){
+        dismissResetConfirmation();
+        message('manage-message','O saldo mudou. Revise as cotas e tente novamente.');
+        paintManager();
+        return;
+      }
+    }else{
+      dismissResetConfirmation();
+      const verb=action==='remove'?'REMOVER cotas contabilizadas':'ADICIONAR cotas contabilizadas';
+      if(!window.confirm(`${verb} de ${selected.gift_name}?\n\nAntes: ${before} cotas\nDepois: ${after} cotas\n\nO histórico de pagamentos será preservado.`))return;
+    }
+    busy=true;
+    $('manage-submit').disabled=true;
+    $('reset-confirm-final').disabled=true;
+    message('manage-message','Salvando ajuste…');
     try{
       await api.rpc('oli_admin_adjust_quotas',{
         p_gift_id:Number(selected.gift_id),p_action:action,p_units:count,p_note:form.elements.note.value.trim()||null
       });
-      form.elements.note.value='';await load();message('manage-message','Ajuste realizado e registrado no histórico.');
-    }catch(err){message('manage-message',err.message||'Não foi possível ajustar as cotas.');}
-    finally{busy=false;$('manage-submit').disabled=false;}
-  });
+      dismissResetConfirmation();
+      form.elements.note.value='';
+      await load();
+      message('manage-message','Ajuste realizado e registrado no histórico.');
+    }catch(err){
+      dismissResetConfirmation();
+      message('manage-message',err.message||'Não foi possível ajustar as cotas.');
+    }finally{
+      busy=false;
+      $('reset-confirm-final').disabled=false;
+      paintManager();
+    }
+  }
   async function deleteContribution(e){
     if(busy)return;
     const ref=String(e.id||'').split('-')[0].toUpperCase();
