@@ -167,7 +167,7 @@
 
  // Links Apple usam webcal:// para assinatura de calendário; sem Web Share API.
  const mapsLink=$('#maps-link'); if(mapsLink)mapsLink.addEventListener('click',()=>toast('Abrindo o Google Maps...'));
- $('#gift-grid').addEventListener('click',e=>{const btn=e.target.closest('[data-gift]');if(btn){e.preventDefault();if(btn.getAttribute('aria-disabled')==='true')return;openGift(btn.dataset.gift);}});
+ $('#gift-grid').addEventListener('click',e=>{const btn=e.target.closest('[data-gift]');if(btn){e.preventDefault();openGift(btn.dataset.gift);}});
 
  $$('.mode-btn').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;syncPay();}));
  $('#plus-qty').addEventListener('click',()=>{quantity++;mode='quotas';syncPay();});
