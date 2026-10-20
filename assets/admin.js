@@ -4,7 +4,7 @@
   const $=id=>document.getElementById(id);
   const api=window.OliBackend;
   const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((Number(n)||0)/100);
-  let entries=[], balances=[],history=[],pixLabels=[], filter='pending', busy=false;
+  let entries=[], balances=[],history=[], filter='pending', busy=false;
   function show(id,value=true){$(id).hidden=!value;}
   function message(id,text){$(id).textContent=text||'';}
   function render(){
@@ -60,11 +60,11 @@
   async function load(){
     try{
       message('dashboard-message','Atualizando contribuições…');
-      [entries,balances,history,pixLabels]=await Promise.all([
-        api.rpc('oli_admin_list'),api.rpc('oli_admin_gift_balances'),api.rpc('oli_admin_adjustment_history'),api.rpc('oli_pix_labels')
+      [entries,balances,history]=await Promise.all([
+        api.rpc('oli_admin_list'),api.rpc('oli_admin_gift_balances'),api.rpc('oli_admin_adjustment_history')
       ]);
-      entries=entries||[];balances=balances||[];history=history||[];pixLabels=pixLabels||[];
-      render();renderManager();renderPixLabels();message('dashboard-message','');
+      entries=entries||[];balances=balances||[];history=history||[];
+      render();renderManager();message('dashboard-message','');
       window.dispatchEvent(new CustomEvent('oli:admin-loaded',{detail:{
         entries:entries.map(e=>({id:e.id,status:e.status,gift_name:e.gift_name,amount_cents:e.amount_cents}))
       }}));
@@ -203,59 +203,6 @@
     catch(err){message('dashboard-message','Não foi possível concluir: '+err.message);}
     finally{busy=false;}
   }
-
-  const pixLabelForm=$('pix-label-form');
-  function selectedPixGift(){return balances.find(g=>String(g.gift_id)===$('pix-label-gift').value);}
-  function pixLabelValue(g){return pixLabels.find(x=>Number(x.gift_id)===Number(g.gift_id))?.pix_label||'';}
-  function pixByteLength(v){return new TextEncoder().encode(String(v)).length;}
-  function paintPixPreview(){
-    const g=selectedPixGift(),input=$('pix-label-input');
-    const val=input.value.trim();
-    $('pix-label-preview-text').textContent=g?'Chá do Oli! - '+(val||g.gift_name):'Selecione um presente.';
-    const len=pixByteLength(val);
-    const valid=len<=38;
-    $('pix-label-save').disabled=!g||!valid;
-    $('pix-label-message').textContent=valid?'':`A identificação tem ${len} bytes; o limite é de 38 bytes (acentos ocupam mais de um byte).`;
-  }
-  function renderPixLabels(){
-    const selector=$('pix-label-gift'),selected=selector.value;
-    selector.replaceChildren();
-    for(const g of balances){
-      const option=document.createElement('option');option.value=String(g.gift_id);option.textContent=g.gift_name;selector.appendChild(option);
-    }
-    if(balances.some(g=>String(g.gift_id)===selected))selector.value=selected;
-    loadPixInput();
-  }
-  function loadPixInput(){
-    const g=selectedPixGift();
-    $('pix-label-input').value=g?pixLabelValue(g):'';
-    $('pix-label-message').textContent='';
-    paintPixPreview();
-  }
-  $('pix-label-gift').addEventListener('change',loadPixInput);
-  $('pix-label-input').addEventListener('input',paintPixPreview);
-  pixLabelForm.addEventListener('submit',async event=>{
-    event.preventDefault();if(busy)return;
-    const g=selectedPixGift(),label=$('pix-label-input').value.trim();
-    if(!g||pixByteLength(label)>38)return;
-    busy=true;$('pix-label-save').disabled=true;message('pix-label-message','Salvando…');
-    try{
-      const result=await api.rpc('oli_admin_set_pix_label',{p_gift_id:Number(g.gift_id),p_pix_label:label||null});
-      const idx=pixLabels.findIndex(x=>Number(x.gift_id)===Number(g.gift_id));
-      if(idx>=0)pixLabels[idx].pix_label=result.pix_label;
-      else pixLabels.push({gift_id:Number(g.gift_id),pix_label:result.pix_label});
-      message('pix-label-message','Descrição salva. Os próximos Pix deste presente usarão a identificação atualizada.');
-      paintPixPreview();
-    }catch(error){message('pix-label-message',error.message||'Não foi possível salvar.');}
-    finally{busy=false;paintPixPreview();}
-  });
-  $('pix-label-reset').addEventListener('click',()=>{
-    const g=selectedPixGift();
-    if(!g||busy)return;
-    $('pix-label-input').value='';
-    paintPixPreview();
-    pixLabelForm.requestSubmit();
-  });
 
   async function loggedIn(){
     show('login-panel',false);

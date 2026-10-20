@@ -40,16 +40,3 @@
 .pwa-tool-note{font-size:11px;color:#86735c;margin:0;line-height:1.6}
 .pwa-tool-note:empty{display:none}
 @media(max-width:620px){.pwa-tools{padding:14px 13px}.pwa-tools-actions button{flex:1;min-width:120px}.pwa-tools-heading p{font-size:11px}}
-
-/* Descrição do Pix por presente */
-.pix-label-panel{max-width:780px}
-.pix-label-panel form{display:grid;gap:10px}
-.pix-label-panel label{font-size:13px;font-weight:750;color:#67513b}
-.pix-label-panel select,.pix-label-panel input{width:100%;min-width:0;border:1px solid #d5c1a8;border-radius:11px;padding:12px 14px;background:#fff;color:var(--ink);font:inherit;font-size:15px}
-.pix-label-panel .pix-label-help{color:#7c6b57;font-size:12px;margin:0 0 8px;line-height:1.55}
-.pix-label-preview{background:#f6eddf;border:1px solid #e1cbae;border-radius:13px;padding:17px;display:grid;gap:5px;overflow-wrap:anywhere}
-.pix-label-preview span{font-size:12px;color:#786451}
-.pix-label-preview strong{font-size:16px;color:#51402f}
-.pix-label-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-.pix-label-actions button{flex:1;min-width:170px}
-@media(max-width:500px){.pix-label-actions{flex-direction:column}.pix-label-actions button{width:100%}}

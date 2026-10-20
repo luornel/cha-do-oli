@@ -11,7 +11,7 @@
   <link rel="manifest" href="./manifest.webmanifest?v=admin-pwa-20261019">
   <title>Controle de presentes</title>
 <link rel="icon" type="image/png" sizes="48x48" href="./icons/oli-48.png?v=admin-pwa-20261019">
-  <link rel="stylesheet" href="assets/admin.css?v=pix-por-presente-20261019">
+  <link rel="stylesheet" href="assets/admin.css?v=sem-personalizacao-pix-20261019">
 </head>
 <body>
   <header class="admin-head">
@@ -131,33 +131,13 @@
           <details class="adjustment-history"><summary>Histórico de ajustes manuais <span aria-hidden="true">⌄</span></summary><div id="adjustment-history-list" class="history-list"></div></details>
         </div>
       </section>
-      <section class="content-section" id="identificacao-pix" aria-labelledby="pix-label-heading">
-        <div class="section-heading">
-          <div><p class="eyebrow">03 · IDENTIFICAÇÃO</p><h2 id="pix-label-heading">Descrição do Pix</h2><p>O Pix identifica o presente automaticamente. Personalize somente se desejar.</p></div>
-        </div>
-        <div class="panel pix-label-panel">
-          <form id="pix-label-form">
-            <label for="pix-label-gift">Presente</label>
-            <select id="pix-label-gift" name="gift_id" required><option value="">Carregando presentes…</option></select>
-            <label for="pix-label-input">Identificação personalizada (opcional)</label>
-            <input id="pix-label-input" name="pix_label" type="text" maxlength="38" placeholder="Usar o título do card" autocomplete="off">
-            <p class="pix-label-help">Deixe vazio para usar o nome original do presente. O texto do Pix sempre começa com “Chá do Oli! -”.</p>
-            <div class="pix-label-preview"><span>Prévia da descrição no Pix</span><strong id="pix-label-preview-text">—</strong></div>
-            <div class="pix-label-actions">
-              <button type="submit" class="primary" id="pix-label-save">Salvar descrição</button>
-              <button type="button" class="outline" id="pix-label-reset">Restaurar padrão</button>
-            </div>
-            <p class="message" id="pix-label-message" role="status" aria-live="polite"></p>
-          </form>
-        </div>
-      </section>
     </div>
   </main>
   <footer>Chá do Oli ♡ · Área restrita aos administradores</footer>
   <script defer src="assets/supabase-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script defer src="assets/supabase-service.js"></script>
-  <script defer src="assets/admin.js?v=admin-limpeza-20261019"></script>
+  <script defer src="assets/admin.js?v=sem-personalizacao-pix-20261019"></script>
   <script defer src="assets/pwa-admin.js?v=webpush-20261019"></script>
 </body>
 </html>
